@@ -1,9 +1,85 @@
 from proccessFiles import proccesDesc, processCSV
 from ID3 import *
 
-CSVfile = "C:/Users/Isaac Gibson/source/VS code/a01/MachineLearning/car/train.csv"
 
-dataDescFile = "C:/Users/Isaac Gibson/source/VS code/a01/MachineLearning/car/data-desc.txt"
+
+def allSameLabel(examples,columns,labels):
+    labelIndex = columns.index("label")
+    label = ""
+    for example in examples:
+        currLabel = example[labelIndex]
+        if not labels.__contains__(currLabel):
+            raise Exception("Label Not valid: " + currLabel)
+        if label == "":
+            label = currLabel
+        else:
+            if label != currLabel:
+                return False
+    return True
+
+def MostCommonLabel(examples,columns,labels):
+    labelIndex = columns.index("label")
+    MCL = ""
+    maxcount = 0
+    lableOccurances = {}
+    for example in examples:
+        currLabel = example[labelIndex]
+        if not labels.__contains__(currLabel):
+            raise Exception("Not a valid Label: " + currLabel)
+        if not lableOccurances.__contains__(currLabel):
+            lableOccurances[currLabel] = 0
+        lableOccurances[currLabel] +=1
+        if lableOccurances[currLabel] > maxcount:
+            maxcount = lableOccurances[currLabel]
+            MCL = currLabel   
+    return MCL
+
+def gain(examples,attributes,attribute,columns,labels,gainMethod):
+    # gain(S,A)=gainMethod(S) - sum( (|Sv|/|S|)* gainMethod(Sv))
+    base = gainMethod(examples,labels,columns)
+    expected = 0.0
+    for Avalue in attributes[attribute]:
+        exampleSubset = subsetExamples(examples,columns,attribute,Avalue)
+        expected += ((len(exampleSubset)* 1.0) / len(examples))*gainMethod(exampleSubset,labels,columns)
+    
+    return base - expected
+
+"""
+    returns attribute to split on
+"""
+def splitOn(examples,attributes,columns,labels,gainMethod):
+    maxgain = -1.0
+    maxAttribute = ""
+    if(len(examples) == 0):
+        raise Exception("No Examples given")
+    for attribute in attributes:
+       currgain = gain(examples,attributes,attribute,columns,labels,gainMethod)
+       if currgain > maxgain:
+           maxgain = currgain
+           maxAttribute = attribute
+    
+    return maxAttribute
+
+"""creates a subset of the examples list that only has """
+def subsetExamples(examples,columns,Attributename,A):
+    AIndex = columns.index(Attributename)
+    subset = []
+    for sample in examples:
+        if sample[AIndex] == A:
+            subset.append(sample)
+    return subset
+
+"""
+    subset of attributes dictonary except specified attribute
+    Attributes - attribute
+"""
+def subsetAttributes(attributes,attribute):
+    subset = attributes.copy()
+    del subset[attribute]
+    return subset
+
+
+
 """
     sets up algorithm and reads input files
     requires CSVfile and data description file as specified by proccessFiles
@@ -16,41 +92,27 @@ def ID3setup(CSVfile,dataDescFile,gainMethod,maxdepth=-1):
     columns = description["columns"]
     labels = description["label values"]
     label = MostCommonLabel(examples,columns,labels)
-    ID3(examples,label,attributes,columns,labels,gainMethod,maxdepth)
+    print("most common Label: " + label)
+    tree = ID3(examples,label,attributes,columns,labels,gainMethod,maxdepth)
+    return tree
 
 
 """recursive that will return root node of subtree """
 def ID3(examples,label,attributes,columns,labels,gainMethod,maxdepth):
-    if allSameLabel(examples,columns,labels,attributes) == False:
+    if allSameLabel(examples,columns,labels):
         return Node(label)
     else:
-        A = splitOn(examples,attributes,columns,gainMethod)
-        root = Node(A,[])
-        for branch in attributes[A]:
-            exampleSubset = subsetExamples(examples,columns,A,branch)
+        Attribute = splitOn(examples,attributes,columns,labels,gainMethod)
+        root = Node(Attribute,{})
+        for branch in attributes[Attribute]:
+            exampleSubset = subsetExamples(examples,columns,Attribute,branch)
             if len(exampleSubset ) == 0 or maxdepth == 0:
                 return Node(label)
             else:
-                attributeSubset = subsetAttributes(attributes,A)
-                root.next.append(ID3(exampleSubset,label,attributes,columns,labels,gainMethod,maxdepth-1))
+                
+                attributeSubset = subsetAttributes(attributes,Attribute)
+                root.next.append(ID3(exampleSubset,label,attributeSubset,columns,labels,gainMethod,maxdepth-1))
         return root
-
-
-def allSameLabel(examples,columns,labels,attributes):
-    [1,2,"label"].index("label")
-    return False
-
-def MostCommonLabel(examples,columns,labels):
-    return ""
-
-def splitOn(examples,attributes,columns,gainMethod):
-    return gainMethod(examples,attributes,columns)
-
-def subsetExamples(examples,columns,A,branch):
-    return "not done"
-
-def subsetAttributes(attributes,A):
-    return "not done"
 
 
 
@@ -60,4 +122,6 @@ class Node:
         self.next = next
 
 if __name__ == '__main__':
-    ID3setup(CSVfile,dataDescFile,)
+    CSVfile = "C:/Users/Isaac Gibson/source/VS code/a01/MachineLearning/car/train.csv"
+    dataDescFile = "C:/Users/Isaac Gibson/source/VS code/a01/MachineLearning/car/data-desc.txt"
+    ID3setup(CSVfile,dataDescFile,entropy)

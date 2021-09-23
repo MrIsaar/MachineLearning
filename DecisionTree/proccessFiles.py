@@ -1,6 +1,4 @@
-CSVfile = "C:/Users/Isaac Gibson/source/VS code/a01/MachineLearning/car/train.csv"
 
-dataDescFile = "C:/Users/Isaac Gibson/source/VS code/a01/MachineLearning/car/data-desc.txt"
 """
     used for processing a CSV file where each item is seperated with a newline
     and each attribute is comma seperated (',')
@@ -96,11 +94,4 @@ def proccesDesc(dataDescFile,debugprint=False):
     return values
 
 
-#auto run car training files when running this file only
-if __name__ == '__main__':
-    print("description file:\n-------------------------")
-    proccesDesc(dataDescFile,True)
-    print("CSV file:\n-------------------------\noutputing first 5 entries\n-------------------------")
-    processCSV(CSVfile,5)
-    
 
