@@ -1,7 +1,7 @@
 import math
 
 """
-    calculates entropy 
+    calculates entropy for information gain 
     - sum ( plog2(p)  )
 """
 def entropy(examples,labels,columns):
@@ -35,7 +35,9 @@ def entropy(examples,labels,columns):
 
 if __name__ == '__main__':
     from ID3Constructor import ID3setup
+    from sys import platform
     import os
+
     #CSVfile = "C:/Users/Isaac Gibson/source/VS code/a01/MachineLearning/car/train.csv"
     #dataDescFile = "C:/Users/Isaac Gibson/source/VS code/a01/MachineLearning/car/data-desc.txt"
 
@@ -45,8 +47,12 @@ if __name__ == '__main__':
    # dirname = os.path.dirname(os.path.dirname(__file__))
     dirname =  os.getcwd()
     print(dirname)
+    if platform == "linux" or platform == "linux2":
+        dirname = os.path.dirname(dirname)
     filename = dirname + '/car/train.csv'
     print(filename)
     descriptFile = dirname + "/car/data-desc.txt"
     tree = ID3setup(filename,descriptFile,entropy)
     print("done")
+
+    #os.sytem.args
