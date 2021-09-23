@@ -103,7 +103,7 @@ def ID3(examples,label,attributes,columns,labels,gainMethod,maxdepth):
         return Node(label)
     else:
         Attribute = splitOn(examples,attributes,columns,labels,gainMethod)
-        root = Node(Attribute,{})
+        root = Node(Attribute,[])
         for branch in attributes[Attribute]:
             exampleSubset = subsetExamples(examples,columns,Attribute,branch)
             if len(exampleSubset ) == 0 or maxdepth == 0:
