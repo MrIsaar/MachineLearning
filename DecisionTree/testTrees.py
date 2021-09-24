@@ -43,6 +43,6 @@ def testTrain(maxdepth=-1):
 
 
 
-for i in range(-1,7):
+for i in range(7):
     print("test " + str(i) + "\n------")
     testTrain(i)

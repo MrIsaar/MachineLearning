@@ -111,7 +111,7 @@ def ID3work(examples,label,attributes,columns,labels,gainMethod,maxdepth):
         root = Node("",Attribute,{})
         for branch in attributes[Attribute]:
             exampleSubset = subsetExamples(examples,columns,Attribute,branch)
-            if len(exampleSubset ) == 0 or maxdepth  0:
+            if len(exampleSubset ) == 0 or maxdepth == 0:
                 return Node(label)
             else:
                 attributeSubset = subsetAttributes(attributes,Attribute)
