@@ -31,28 +31,58 @@ def entropy(examples,labels,columns):
         
     return -entropyVal
 
+
+"""
+    Majority Error
+"""
+def MajorityError(examples,labels,columns):
+    if(len(examples) <= 1):
+        return 0.0
     
+    LIndex = columns.index("label")
+    itemsSeen = 0
+    majority = 0
+    majorityLabel=""
+    labelDict = {}
+    for example in examples:
+        currlabel = example[LIndex]
+        if not labels.__contains__(currlabel):
+            raise Exception("label not in label list: " + currlabel)
+        if not labelDict.__contains__(currlabel):
+            labelDict[currlabel] = 0
+        labelDict[currlabel] += 1
+        itemsSeen += 1
+        if labelDict[currlabel] > majority:
+            majority = labelDict[currlabel]
+            majorityLabel = currlabel
+
+    if itemsSeen != len(examples):
+        raise Exception("entropy not same count something is wrong")
+    
+    return (itemsSeen - majority)/majority
+        
+
+
+
+
 
 if __name__ == '__main__':
     from ID3Constructor import ID3setup
     from sys import platform
     import os
 
-    #CSVfile = "C:/Users/Isaac Gibson/source/VS code/a01/MachineLearning/car/train.csv"
-    #dataDescFile = "C:/Users/Isaac Gibson/source/VS code/a01/MachineLearning/car/data-desc.txt"
-
-    print (__file__)
-   
-   # print(os.path.dirname(__file__))
-   # dirname = os.path.dirname(os.path.dirname(__file__))
     dirname =  os.getcwd()
-    print(dirname)
+    dirname = os.path.dirname(dirname)
     if platform == "linux" or platform == "linux2":
-        dirname = os.path.dirname(dirname)
-    filename = dirname + '/car/train.csv'
+        
+        filename = dirname + '/car/train.csv'
+        descriptFile = dirname + "/car/data-desc.txt"
+    else:
+        filename = dirname + '\\car\\train.csv'
+        descriptFile = dirname + "\\car\\data-desc.txt"
     print(filename)
-    descriptFile = dirname + "/car/data-desc.txt"
-    tree = ID3setup(filename,descriptFile,entropy)
+    print(descriptFile)
+    tree = ID3setup(filename,descriptFile,MajorityError)
     print("done")
 
     #os.sytem.args
