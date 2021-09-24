@@ -2,7 +2,7 @@ from proccessFiles import proccesDesc, processCSV
 from ID3 import *
 
 
-
+"""returns True if all labels in examples are the same"""
 def allSameLabel(examples,columns,labels):
     labelIndex = columns.index("label")
     label = ""
@@ -17,6 +17,7 @@ def allSameLabel(examples,columns,labels):
                 return False
     return True
 
+"""returns the most common label in examples that exists in the labels list"""
 def MostCommonLabel(examples,columns,labels):
     labelIndex = columns.index("label")
     MCL = ""
@@ -34,6 +35,10 @@ def MostCommonLabel(examples,columns,labels):
             MCL = currLabel   
     return MCL
 
+"""
+    calculates gain based on provided gain method
+    ie entropy, majority error, gini index 
+"""
 def gain(examples,attributes,attribute,columns,labels,gainMethod):
     # gain(S,A)=gainMethod(S) - sum( (|Sv|/|S|)* gainMethod(Sv))
     base = gainMethod(examples,labels,columns)
@@ -92,7 +97,7 @@ def ID3setup(CSVfile,dataDescFile,gainMethod,maxdepth=-1):
     columns = description["columns"]
     labels = description["label values"]
     label = MostCommonLabel(examples,columns,labels)
-    print("most common Label: " + label)
+    
     tree = ID3(examples,label,attributes,columns,labels,gainMethod,maxdepth)
     return tree
 
@@ -103,22 +108,22 @@ def ID3(examples,label,attributes,columns,labels,gainMethod,maxdepth):
         return Node(label)
     else:
         Attribute = splitOn(examples,attributes,columns,labels,gainMethod)
-        root = Node(Attribute,[])
+        root = Node("",Attribute,[])
         for branch in attributes[Attribute]:
             exampleSubset = subsetExamples(examples,columns,Attribute,branch)
             if len(exampleSubset ) == 0 or maxdepth == 0:
                 return Node(label)
             else:
-                
                 attributeSubset = subsetAttributes(attributes,Attribute)
-                root.next.append(ID3(exampleSubset,label,attributeSubset,columns,labels,gainMethod,maxdepth-1))
+                root.next[branch] = (ID3(exampleSubset,MostCommonLabel(exampleSubset,columns,labels),attributeSubset,columns,labels,gainMethod,maxdepth-1))
         return root
 
 
 
 class Node:
-    def __init__(self,label,next=None):
+    def __init__(self,label,attribute="label",next=None):
         self.label = label
+        self.attribute = attribute
         self.next = next
 
 if __name__ == '__main__':
