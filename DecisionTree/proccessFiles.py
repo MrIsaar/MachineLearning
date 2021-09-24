@@ -18,7 +18,6 @@ def processCSV(CSVfile, debugprint=0):
 
             items.append(terms)
             if debugprint > index:
-                
                 print(items[index])
             index += 1
     return items

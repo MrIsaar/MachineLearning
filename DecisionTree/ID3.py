@@ -1,5 +1,8 @@
 import math
 
+from ID3Constructor import ID3setup
+from ID3Constructor import ID3Tree
+
 """
     calculates entropy for information gain 
     - sum ( plog2(p)  )
@@ -98,27 +101,43 @@ def giniIndex(examples,labels,columns):
     requires a CSV file and description file to create 
     tree based on provided data.
 
+    maxdepth can be set by 
+
     set gainCalculation to set which way of calculating gain with following inputs:
      "information gain","majority error", "gini index"
     will default to "information gain" if none are specified or invalid 
 """
-def ID3(filename,descriptFile,gainCalculation="information gain"):
-   
+def ID3(filename,descriptFile,maxdepth=-1,gainCalculation="information gain"):
+    tree = None
     if gainCalculation.lower() == "majority error":
         print( "using Majority Error")
-        return ID3setup(filename,descriptFile,MajorityError)
+        tree = ID3setup(filename,descriptFile,MajorityError,maxdepth)
     else:
         if gainCalculation.lower() == "gini index":
             print( "using gini index")
-            return ID3setup(filename,descriptFile,giniIndex)
+            tree = ID3setup(filename,descriptFile,giniIndex,maxdepth)
         else:
             print( "using information gain")
-            return ID3setup(filename,descriptFile,entropy)
+            tree = ID3setup(filename,descriptFile,entropy,maxdepth)
+    return tree
+    
+    
 
+def getResult(ID3Tree,sample):
+    if len(sample) != len(ID3Tree.columns):
+        raise Exception("sample does not match tree model")
+    tree = ID3Tree.tree
+    for i in range(len(sample)-1):
+        index = ID3Tree.columns.index(tree.attribute)
+        if tree.attribute != "label":
+            tree = tree.next[sample[index]]
+        else:
+            return tree.label
+
+    
 
 #C:\Users\Isaac Gibson\source\VS code\a01\MachineLearning\car\train.csv
 if __name__ == '__main__':
-    from ID3Constructor import ID3setup
     from sys import platform
     import os
 
