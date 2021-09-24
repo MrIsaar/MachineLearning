@@ -1,4 +1,3 @@
-from a01 import giniIndex
 import math
 
 """
@@ -34,7 +33,7 @@ def entropy(examples,labels,columns):
 
 
 """
-    Majority Error
+    Majority Error calculation
 """
 def MajorityError(examples,labels,columns):
     if(len(examples) <= 1):
@@ -64,6 +63,37 @@ def MajorityError(examples,labels,columns):
         
 
 """
+    gini Index implementation
+"""
+def giniIndex(examples,labels,columns):
+    if(len(examples) <= 1):
+        return 0.0
+    
+    LIndex = columns.index("label")
+    itemsSeen = 0
+    giniIndex = 1
+    labelDict = {}
+    for example in examples:
+        currlabel = example[LIndex]
+        if not labels.__contains__(currlabel):
+            raise Exception("label not in label list: " + currlabel)
+        if not labelDict.__contains__(currlabel):
+            labelDict[currlabel] = 0
+        labelDict[currlabel] += 1
+        itemsSeen += 1
+    if itemsSeen != len(examples):
+        raise Exception("entropy not same count something is wrong")
+
+    for label in labelDict:
+        p = labelDict[label]/itemsSeen
+        curr = p**2
+        giniIndex -= curr
+    return giniIndex
+
+
+
+
+"""
     creates decision tree using the ID3 algorithm and 
     requires a CSV file and description file to create 
     tree based on provided data.
@@ -86,24 +116,26 @@ def ID3(filename,descriptFile,gainCalculation="information gain"):
             return ID3setup(filename,descriptFile,entropy)
 
 
-
+#C:\Users\Isaac Gibson\source\VS code\a01\MachineLearning\car\train.csv
 if __name__ == '__main__':
     from ID3Constructor import ID3setup
     from sys import platform
     import os
 
     dirname =  os.getcwd()
-    dirname = os.path.dirname(dirname)
+    if dirname.endswith("DecisionTree"):
+        dirname = os.path.dirname(dirname)
     if platform == "linux" or platform == "linux2":
         
-        filename = dirname + '/car/train.csv'
+        filename = dirname + "/car/train.csv"
         descriptFile = dirname + "/car/data-desc.txt"
     else:
-        filename = dirname + '\\car\\train.csv'
+        filename = dirname + "\\car\\train.csv"
         descriptFile = dirname + "\\car\\data-desc.txt"
     print(filename)
     print(descriptFile)
-    tree = ID3setup(filename,descriptFile,MajorityError)
+    
+    tree = ID3setup(filename,descriptFile,giniIndex)
     print("done building tree")
 
 
