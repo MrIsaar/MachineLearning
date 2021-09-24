@@ -1,3 +1,4 @@
+from a01 import giniIndex
 import math
 
 """
@@ -62,7 +63,27 @@ def MajorityError(examples,labels,columns):
     return (itemsSeen - majority)/majority
         
 
+"""
+    creates decision tree using the ID3 algorithm and 
+    requires a CSV file and description file to create 
+    tree based on provided data.
 
+    set gainCalculation to set which way of calculating gain with following inputs:
+     "information gain","majority error", "gini index"
+    will default to "information gain" if none are specified or invalid 
+"""
+def ID3(filename,descriptFile,gainCalculation="information gain"):
+   
+    if gainCalculation.lower() == "majority error":
+        print( "using Majority Error")
+        return ID3setup(filename,descriptFile,MajorityError)
+    else:
+        if gainCalculation.lower() == "gini index":
+            print( "using gini index")
+            return ID3setup(filename,descriptFile,giniIndex)
+        else:
+            print( "using information gain")
+            return ID3setup(filename,descriptFile,entropy)
 
 
 
@@ -83,6 +104,8 @@ if __name__ == '__main__':
     print(filename)
     print(descriptFile)
     tree = ID3setup(filename,descriptFile,MajorityError)
-    print("done")
+    print("done building tree")
+
+
 
     #os.sytem.args

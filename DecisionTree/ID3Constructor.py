@@ -98,24 +98,24 @@ def ID3setup(CSVfile,dataDescFile,gainMethod,maxdepth=-1):
     labels = description["label values"]
     label = MostCommonLabel(examples,columns,labels)
     
-    tree = ID3(examples,label,attributes,columns,labels,gainMethod,maxdepth)
+    tree = ID3work(examples,label,attributes,columns,labels,gainMethod,maxdepth)
     return tree
 
 
 """recursive that will return root node of subtree """
-def ID3(examples,label,attributes,columns,labels,gainMethod,maxdepth):
+def ID3work(examples,label,attributes,columns,labels,gainMethod,maxdepth):
     if allSameLabel(examples,columns,labels):
         return Node(label)
     else:
         Attribute = splitOn(examples,attributes,columns,labels,gainMethod)
-        root = Node("",Attribute,[])
+        root = Node("",Attribute,{})
         for branch in attributes[Attribute]:
             exampleSubset = subsetExamples(examples,columns,Attribute,branch)
             if len(exampleSubset ) == 0 or maxdepth == 0:
                 return Node(label)
             else:
                 attributeSubset = subsetAttributes(attributes,Attribute)
-                root.next[branch] = (ID3(exampleSubset,MostCommonLabel(exampleSubset,columns,labels),attributeSubset,columns,labels,gainMethod,maxdepth-1))
+                root.next[branch] = (ID3work(exampleSubset,MostCommonLabel(exampleSubset,columns,labels),attributeSubset,columns,labels,gainMethod,maxdepth-1))
         return root
 
 
