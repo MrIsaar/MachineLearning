@@ -90,7 +90,7 @@ def subsetAttributes(attributes,attribute):
     requires CSVfile and data description file as specified by proccessFiles
     maxdepth = -1 means that no limit is set
 """
-def ID3setup(CSVfile,dataDescFile,gainMethod,maxdepth=-1):
+def ID3setup(CSVfile,dataDescFile,gainMethod,maxdepth):
     description = proccesDesc(dataDescFile)
     examples = processCSV(CSVfile)
     attributes = description["attributes"]
@@ -99,7 +99,7 @@ def ID3setup(CSVfile,dataDescFile,gainMethod,maxdepth=-1):
     label = MostCommonLabel(examples,columns,labels)
     
     tree = ID3work(examples,label,attributes,columns,labels,gainMethod,maxdepth)
-    return tree
+    return ID3Tree(tree, columns)
 
 
 """recursive that will return root node of subtree """
@@ -111,14 +111,18 @@ def ID3work(examples,label,attributes,columns,labels,gainMethod,maxdepth):
         root = Node("",Attribute,{})
         for branch in attributes[Attribute]:
             exampleSubset = subsetExamples(examples,columns,Attribute,branch)
-            if len(exampleSubset ) == 0 or maxdepth == 0:
+            if len(exampleSubset ) == 0 or maxdepth  0:
                 return Node(label)
             else:
                 attributeSubset = subsetAttributes(attributes,Attribute)
                 root.next[branch] = (ID3work(exampleSubset,MostCommonLabel(exampleSubset,columns,labels),attributeSubset,columns,labels,gainMethod,maxdepth-1))
         return root
 
-
+class ID3Tree:
+    def __init__(self,tree, columns,label="ID3Tree"):
+        self.label = label
+        self.columns = columns
+        self.tree = tree
 
 class Node:
     def __init__(self,label,attribute="label",next=None):
