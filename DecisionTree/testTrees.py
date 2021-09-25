@@ -7,7 +7,7 @@ import os
 
 
 """
-    set up file connection
+    set up file connection to carfiles
 """
 def carfiles(filenameEnd):
     dirname =  os.getcwd()
@@ -23,7 +23,24 @@ def carfiles(filenameEnd):
       # carTrainFile = dirname + "\\car\\train.csv"
       # carDescriptFile = dirname + "\\car\\data-desc.txt"
       return dirname + "\\car\\" + filenameEnd
-    
+
+"""
+    set up file connection to bankfiles
+"""      
+def bankfiles(filenameEnd):
+    dirname =  os.getcwd()
+    carTrainFile = ""
+    carDescriptFile = ""
+    if dirname.endswith("DecisionTree"):
+        dirname = os.path.dirname(dirname)
+    if platform == "linux" or platform == "linux2":
+       # carTrainFile = dirname + "/car/train.csv"
+       # carDescriptFile = dirname + "/car/data-desc.txt"
+       return dirname + "/bank/" + filenameEnd
+    else:
+      # carTrainFile = dirname + "\\car\\train.csv"
+      # carDescriptFile = dirname + "\\car\\data-desc.txt"
+      return dirname + "\\bank\\" + filenameEnd
 carTrainFile = carfiles("train.csv")
 carTestFile = carfiles("test.csv")
 carDescriptFile = carfiles("data-desc.txt")
@@ -32,13 +49,36 @@ carTrainExamples = processCSV(carTestFile)
 carTestExamples = processCSV(carTestFile)
 carDescription = proccesDesc(carDescriptFile)
 
-"""builds tree based on """
-def testTrain(calc,examples,maxdepth=-1):
-    tree = ID3(carTrainFile,carDescriptFile,maxdepth,calc)
-    attributes = carDescription["attributes"]
-    columns = carDescription["columns"]
-    labels = carDescription["label values"]
+bankTrainFile = bankfiles("train.csv")
+bankTestFile = bankfiles("test.csv")
+bankDescriptFile = bankfiles("data-desc.txt")
 
+bankTrainExamples = processCSV(bankTestFile)
+bankTestExamples = processCSV(bankTestFile)
+bankDescription = proccesDesc(bankDescriptFile)
+
+
+
+"""builds tree based on """
+def testTrain(calc,examples,maxdepth=-1,carExamples=True,):
+    tree = None
+    attributes = None
+    columns = None
+    labels = None
+
+    if(carExamples == True):
+        tree = ID3(carTrainFile,carDescriptFile,maxdepth,calc)
+        attributes = carDescription["attributes"]
+        columns = carDescription["columns"]
+        labels = carDescription["label values"]
+
+    else:
+        tree =ID3(bankTrainFile,bankDescriptFile,maxdepth,calc)
+        attributes = bankDescription["attributes"]
+        columns = bankDescription["columns"]
+        labels = bankDescription["label values"]
+
+    
     wrongPredict = 0
     totalSamples = 0
     for sample in examples:
@@ -51,36 +91,82 @@ def testTrain(calc,examples,maxdepth=-1):
     return str(percent)
 
 
-
+#training car data
 header = "car Training"
 output = "InfoGain"
 for i in range(7):
-    header += "," + str(i)
-    output += "\t" + testTrain("information gain",carTrainExamples,i)
+    header += "\t" + str(i)
+    output += "\t" + str(testTrain("information gain",carTrainExamples,i))[:5]
 print (header)
 print(output)
+
+
+"""
 output = "MajorError"
 for i in range(7):
-    output += "\t" + testTrain("majority error",carTrainExamples,i)
+    output += "\t" + str(testTrain("majority error",carTrainExamples,i))[:5]
 print(output)
 output = "GiniIndex"
 for i in range(7):
-    output += "\t" + testTrain("gini index",carTrainExamples,i)
+    output += "\t" + str(testTrain("gini index",carTrainExamples,i))[:5]
 print(output)
 
-#test data
+
+#test car data
 header = "car Testing"
 output = "InfoGain"
 for i in range(7):
     header += "\t" + str(i)
-    output += "\t" + testTrain("information gain",carTestExamples,i)
+    output += "\t" + str(testTrain("information gain",carTestExamples,i))[:5]
 print (header)
 print(output)
 output = "MajorError"
 for i in range(7):
-    output += "\t" + testTrain("majority error",carTestExamples,i)
+    output += "\t" + str(testTrain("majority error",carTestExamples,i))[:5]
 print(output)
 output = "GiniIndex"
 for i in range(7):
-    output += "\t" + testTrain("gini index",carTestExamples,i)
+    output += "\t" + str(testTrain("gini index",carTestExamples,i))[:5]
 print(output)
+
+
+"""
+
+#training bank data
+header = "\nBank Training unknown as value"
+output = "InfoGain"
+for i in range(16):
+    header += "\t" + str(i)
+    output += "\t" + str(testTrain("information gain",bankTrainExamples,i,False))[:5]
+print (header)
+print(output)
+
+
+output = "MajorError"
+for i in range(16):
+    output += "\t" + str(testTrain("majority error",bankTrainExamples,i,False))[:5]
+print(output)
+output = "GiniIndex"
+for i in range(16):
+    output += "\t" + str(testTrain("gini index",bankTrainExamples,i,False))[:5]
+print(output)
+
+#test bank data
+header = "\nbank Testing  unknown as value"
+output = "InfoGain"
+for i in range(16):
+    header += "\t" + str(i)
+    output += "\t" + str(testTrain("information gain",bankTestExamples,i,False))[:5]
+print (header)
+print(output)
+output = "MajorError"
+for i in range(16):
+    output += "\t" + str(testTrain("majority error",bankTestExamples,i,False))[:5]
+print(output)
+output = "GiniIndex"
+for i in range(16):
+    output += "\t" + str(testTrain("gini index",bankTestExamples,i,False))[:5]
+print(output)
+
+"""
+"""

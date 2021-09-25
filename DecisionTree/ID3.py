@@ -133,7 +133,21 @@ def getResult(ID3Tree,sample):
     for i in range(len(sample)-1):
         index = ID3Tree.columns.index(tree.attribute)
         if tree.attribute != "label":
-            tree = tree.next[sample[index]]
+            A = ID3Tree.attributes[tree.attribute][0]
+            if A.startswith("<") and A.endswith(">"):
+                
+                #numeric value 
+                
+                if A[1:2] =="<":
+                    if float(sample[index]) < float(A[2:len(A)-1]):
+                        tree = tree.next[A]
+                    else:
+                        tree = tree.next[ID3Tree.attributes[tree.attribute][1]]
+
+
+            else:
+                #non numeric value
+                tree = tree.next[sample[index]]
         else:
             return tree.label
 

@@ -1,5 +1,31 @@
 from proccessFiles import proccesDesc, processCSV
 from ID3 import *
+def findMedian(examples,index):
+    allnumbers = []
+    for example in examples:
+        allnumbers.append(example[index])
+    allnumbers.sort()
+    return allnumbers[(math.floor(len(allnumbers)/2))]
+
+"""processes numeric values to find median will return Attributes dictionary with adjusted values"""
+def solveNumberic(examples,attributes,columns):
+    changed = False
+    newAttributes = {}
+    for attribute in attributes:
+        value = attributes[attribute][0]
+        if value.startswith("<") and value.endswith(">"):
+            index = columns.index(attribute)
+            median = findMedian(examples,index)
+            valueless = "<<" +str(median)+">"
+            valuemore = "<>" +str(median)+">"
+            newAttributes[attribute] = [valueless,valuemore]
+            changed = True
+        else:
+            newAttributes[attribute] = attributes[attribute]
+    if changed:
+        return newAttributes
+    else:
+        return attributes
 
 
 """returns True if all labels in examples are the same"""
@@ -69,9 +95,22 @@ def splitOn(examples,attributes,columns,labels,gainMethod):
 def subsetExamples(examples,columns,Attributename,A):
     AIndex = columns.index(Attributename)
     subset = []
+    numeric = False
+    if A.startswith("<") and A.endswith(">") and len(A) > 3:
+            A = A[1:len(A)-1]
+            numeric = True
     for sample in examples:
-        if sample[AIndex] == A:
-            subset.append(sample)
+        if numeric:
+            if A[:1] =="<":
+                if float(sample[AIndex]) < float(A[1:]):
+                    subset.append(sample)
+            else:
+                if float(sample[AIndex]) >= float(A[1:]):
+                    subset.append(sample)
+         
+        else:
+            if sample[AIndex] == A:
+                subset.append(sample)
     return subset
 
 """
@@ -97,9 +136,10 @@ def ID3setup(CSVfile,dataDescFile,gainMethod,maxdepth):
     columns = description["columns"]
     labels = description["label values"]
     label = MostCommonLabel(examples,columns,labels)
+    attributes = solveNumberic(examples,attributes,columns)
     
     tree = ID3work(examples,label,attributes,columns,labels,gainMethod,maxdepth)
-    return ID3Tree(tree, columns)
+    return ID3Tree(tree, columns,attributes)
 
 
 """recursive that will return root node of subtree """
@@ -119,10 +159,11 @@ def ID3work(examples,label,attributes,columns,labels,gainMethod,maxdepth):
         return root
 
 class ID3Tree:
-    def __init__(self,tree, columns,label="ID3Tree"):
+    def __init__(self,tree, columns,attributes,label="ID3Tree"):
         self.label = label
         self.columns = columns
         self.tree = tree
+        self.attributes = attributes
 
 class Node:
     def __init__(self,label,attribute="label",next=None):
