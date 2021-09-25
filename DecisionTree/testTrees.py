@@ -60,7 +60,7 @@ bankDescription = proccesDesc(bankDescriptFile)
 
 
 """builds tree based on """
-def testTrain(calc,examples,maxdepth=-1,carExamples=True,):
+def testTrain(calc,examples,maxdepth=-1,carExamples=True,handleUnknown=False):
     tree = None
     attributes = None
     columns = None
@@ -73,7 +73,7 @@ def testTrain(calc,examples,maxdepth=-1,carExamples=True,):
         labels = carDescription["label values"]
 
     else:
-        tree =ID3(bankTrainFile,bankDescriptFile,maxdepth,calc)
+        tree =ID3(bankTrainFile,bankDescriptFile,maxdepth,calc,handleUnknown)
         attributes = bankDescription["attributes"]
         columns = bankDescription["columns"]
         labels = bankDescription["label values"]
@@ -99,9 +99,6 @@ for i in range(7):
     output += "\t" + str(testTrain("information gain",carTrainExamples,i))[:5]
 print (header)
 print(output)
-
-
-"""
 output = "MajorError"
 for i in range(7):
     output += "\t" + str(testTrain("majority error",carTrainExamples,i))[:5]
@@ -130,8 +127,6 @@ for i in range(7):
 print(output)
 
 
-"""
-
 #training bank data
 header = "\nBank Training unknown as value"
 output = "InfoGain"
@@ -140,8 +135,6 @@ for i in range(16):
     output += "\t" + str(testTrain("information gain",bankTrainExamples,i,False))[:5]
 print (header)
 print(output)
-
-
 output = "MajorError"
 for i in range(16):
     output += "\t" + str(testTrain("majority error",bankTrainExamples,i,False))[:5]
@@ -168,5 +161,39 @@ for i in range(16):
     output += "\t" + str(testTrain("gini index",bankTestExamples,i,False))[:5]
 print(output)
 
+
+#training bank data
+header = "\nBank Training unknown prediction"
+output = "InfoGain"
+for i in range(16):
+    header += "\t" + str(i)
+    output += "\t" + str(testTrain("information gain",bankTrainExamples,i,False,True))[:5]
+print (header)
+print(output)
+output = "MajorError"
+for i in range(16):
+    output += "\t" + str(testTrain("majority error",bankTrainExamples,i,False,True))[:5]
+print(output)
+output = "GiniIndex"
+for i in range(16):
+    output += "\t" + str(testTrain("gini index",bankTrainExamples,i,False,True))[:5]
+print(output)
+
+#test bank data
+header = "\nbank Testing  unknown prediction"
+output = "InfoGain"
+for i in range(16):
+    header += "\t" + str(i)
+    output += "\t" + str(testTrain("information gain",bankTestExamples,i,False,True))[:5]
+print (header)
+print(output)
+output = "MajorError"
+for i in range(16):
+    output += "\t" + str(testTrain("majority error",bankTestExamples,i,False,True))[:5]
+print(output)
+output = "GiniIndex"
+for i in range(16):
+    output += "\t" + str(testTrain("gini index",bankTestExamples,i,False,True))[:5]
+print(output)
 """
 """

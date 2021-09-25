@@ -107,21 +107,21 @@ def giniIndex(examples,labels,columns):
      "information gain","majority error", "gini index"
     will default to "information gain" if none are specified or invalid 
 """
-def ID3(filename,descriptFile,maxdepth=-1,gainCalculation="information gain",verbose=False):
+def ID3(filename,descriptFile,maxdepth=-1,gainCalculation="information gain",handleUnknown=False,verbose=False):
     tree = None
     if gainCalculation.lower() == "majority error":
         if(verbose):
             print( "using Majority Error")
-        tree = ID3setup(filename,descriptFile,MajorityError,maxdepth)
+        tree = ID3setup(filename,descriptFile,MajorityError,maxdepth,handleUnknown)
     else:
         if gainCalculation.lower() == "gini index":
             if(verbose):
                 print( "using gini index")
-            tree = ID3setup(filename,descriptFile,giniIndex,maxdepth)
+            tree = ID3setup(filename,descriptFile,giniIndex,maxdepth,handleUnknown)
         else:
             if(verbose):   
                 print( "using information gain")
-            tree = ID3setup(filename,descriptFile,entropy,maxdepth)
+            tree = ID3setup(filename,descriptFile,entropy,maxdepth,handleUnknown)
     return tree
     
     
@@ -171,7 +171,7 @@ if __name__ == '__main__':
     print(filename)
     print(descriptFile)
     
-    tree = ID3setup(filename,descriptFile,giniIndex)
+    tree = ID3setup(filename,descriptFile,giniIndex,False)
     print("done building tree")
 
 
