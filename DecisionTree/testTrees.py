@@ -53,7 +53,7 @@ bankTrainFile = bankfiles("train.csv")
 bankTestFile = bankfiles("test.csv")
 bankDescriptFile = bankfiles("data-desc.txt")
 
-bankTrainExamples = processCSV(bankTestFile)
+bankTrainExamples = processCSV(bankTrainFile)
 bankTestExamples = processCSV(bankTestFile)
 bankDescription = proccesDesc(bankDescriptFile)
 
