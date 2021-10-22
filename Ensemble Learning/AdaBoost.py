@@ -170,7 +170,7 @@ class AdaBoost:
                 return self.labels[1]
             return 0
 
-    def __init__(self,CSVfile,dataDescFile):
+    def __init__(self,CSVfile,dataDescFile,T):
         self.description = proccesDesc(dataDescFile)
         
         self.examples = processCSV(CSVfile)
