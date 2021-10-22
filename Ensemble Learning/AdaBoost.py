@@ -183,6 +183,7 @@ class AdaBoost:
         #self.attributes = solveNumberic(self.examples,self.attributes,self.columns)
     
         #self.tree = ID3(CSVfile,dataDescFile,maxdepth=2,handleUnknown=True)
-        return self.AdaBoostWork(T)  
+        self.AdaBoostWork(T)  
+        return
 
 

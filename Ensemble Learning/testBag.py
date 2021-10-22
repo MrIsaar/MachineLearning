@@ -42,7 +42,8 @@ TestFile = genericfiles("small","test.csv")
 DescriptFile = genericfiles("small","data-desc.txt")
 TrainExamples = processCSV(TrainFile)
 
-function = AdaBoost().AdaBoost(TrainFile,DescriptFile)
+"""
+function = AdaBoost(TrainFile,DescriptFile,5)
 errors= 0
 total= 0
 for sample in TrainExamples: 
@@ -52,7 +53,7 @@ for sample in TrainExamples:
     total +=1  
 print("train small: ",errors , " errors out of ", total)
 
-
+"""
 
 
 bankTrainFile = bankfiles("train.csv")
@@ -80,7 +81,7 @@ for t in range(1,500):
             errors += 1
         total +=1  
     #print("train: ",errors , " errors out of ", total)
-    output += "," + str(errors/total)[:5]
+    output += "," + str(1-(errors/total))[:5]
 
     errors= 0
     total= 0
@@ -90,27 +91,58 @@ for t in range(1,500):
             errors += 1
         total +=1  
     #print("test: ", errors , " errors out of ", total)
-    output += "," + str(errors/total)[:5]
+    output += "," + str(1-(errors/total))[:5]
     print (output)
     fullOut += output + "\n"
 
-file = open(genericfiles("results","bankResults.txt"),"w")
+file = open(genericfiles("results","bankboostResults.txt"),"w")
 file.write(fullOut)
 file.close()
 
 """
 
-for t in range(5,5):
+print("Small Training")
+output = ""
+for t in range(0,5):
+    bag = bagging(TrainFile,DescriptFile,t)
+    output = "" + str(t)
+    errors= 0
+    total= 0
+    for sample in TrainExamples: 
+        testResult = bag.bagResult(sample)
+        if (sample[len(sample)-1] != testResult ):
+            errors += 1
+        total +=1  
+    #print("train: ",errors , " errors out of ", total)
+    output += "," + str(1-(errors/total))[:5]
+print(output)
+
+print("bank Training")
+fullOut = ""
+for t in range(1,500):
     bag = bagging(bankTrainFile,bankDescriptFile,t)
     output = "" + str(t)
     errors= 0
     total= 0
     for sample in bankTrainExamples: 
-        testResult = function.Hfinal(sample)
+        testResult = bag.bagResult(sample)
         if (sample[len(sample)-1] != testResult ):
             errors += 1
         total +=1  
     #print("train: ",errors , " errors out of ", total)
-    output += "," + str(errors/total)[:5]
-print(output)
+    output += "," + str(1-(errors/total))[:5] 
+    errors= 0
+    total= 0
+    for sample in bankTestExamples: 
+        testResult = bag.bagResult(sample)
+        if (sample[len(sample)-1] != testResult ):
+            errors += 1
+        total +=1  
+    #print("train: ",errors , " errors out of ", total)
+    output += "," + str(1-(errors/total))[:5]
+    fullOut += output + "\n"
+    print(output)
+file = open(genericfiles("results","bankbagResults.txt"),"w")
+file.write(fullOut)
+file.close()  
 

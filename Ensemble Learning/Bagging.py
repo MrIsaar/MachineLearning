@@ -11,7 +11,7 @@ class bagging():
         self.examples = processCSV(CSVfile)
         self.csv = CSVfile
         self.dataDesc = dataDescFile
-        
+        self.labels = self.description["label values"]
         self.bagwork()
 
     def bagResult(self,sample):
@@ -43,7 +43,7 @@ class bagging():
             sample = self.examples[i]
             ht = self.labelTranslate(getResult(self.c[t],sample))
             yi = self.labelTranslate(sample[len(sample)-1])
-            sum += yi * ht
+            sum += (1/len(self.examples))*yi * ht
         return 0.5 - 0.5*sum
 
     """
@@ -53,8 +53,9 @@ class bagging():
         self.c = []
         for t in range(self.T):
             examplest = []
-            i = math.floor(random.uniform(0,len(self.examples)))
-            examplest.append(self.examples[i])
+            for m in range(len(self.examples)):
+                i = math.floor(random.uniform(0,len(self.examples)))
+                examplest.append(self.examples[i])
             tree = self.treemake(examplest)
             self.c.append(tree)
         self.a = self.votePredictions()
@@ -67,7 +68,7 @@ class bagging():
         a = []
         for t in range(self.T):
             err = self.error(t)
-            a.append((1-err)/err)
+            a.append( 0.5*math.log((1-err)/err))
         return a
 
 
