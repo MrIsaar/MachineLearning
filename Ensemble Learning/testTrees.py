@@ -4,20 +4,6 @@ from ID3 import *
 from sys import platform
 import os
 
-def genericfiles(folder,filenameEnd):
-    dirname =  os.getcwd()
-    carTrainFile = ""
-    carDescriptFile = ""
-    if dirname.endswith("DecisionTree"):
-        dirname = os.path.dirname(dirname)
-    if platform == "linux" or platform == "linux2":
-       # carTrainFile = dirname + "/car/train.csv"
-       # carDescriptFile = dirname + "/car/data-desc.txt"
-       return dirname + "/"+folder+"/" + filenameEnd
-    else:
-      # carTrainFile = dirname + "\\car\\train.csv"
-      # carDescriptFile = dirname + "\\car\\data-desc.txt"
-      return dirname + "\\"+folder+"\\" + filenameEnd
 
 
 """
@@ -55,13 +41,6 @@ def bankfiles(filenameEnd):
       # carTrainFile = dirname + "\\car\\train.csv"
       # carDescriptFile = dirname + "\\car\\data-desc.txt"
       return dirname + "\\bank\\" + filenameEnd
-
-
-TrainFile = genericfiles("small","train.csv")
-TestFile = genericfiles("small","test.csv")
-DescriptFile = genericfiles("small","data-desc.txt")
-TrainExamples = processCSV(TrainFile)
-
 carTrainFile = carfiles("train.csv")
 carTestFile = carfiles("test.csv")
 carDescriptFile = carfiles("data-desc.txt")
@@ -86,21 +65,18 @@ def testTrain(calc,examples,maxdepth=-1,carExamples=True,handleUnknown=False):
     attributes = None
     columns = None
     labels = None
-    if(carExamples == "small"):
-        tree = ID3(TrainFile,DescriptFile,maxdepth,calc)
+
+    if(carExamples == True):
+        tree = ID3(carTrainFile,carDescriptFile,maxdepth,calc)
+        attributes = carDescription["attributes"]
+        columns = carDescription["columns"]
+        labels = carDescription["label values"]
+
     else:
-
-        if(carExamples == True):
-            tree = ID3(carTrainFile,carDescriptFile,maxdepth,calc)
-            attributes = carDescription["attributes"]
-            columns = carDescription["columns"]
-            labels = carDescription["label values"]
-
-        else:
-            tree =ID3(bankTrainFile,bankDescriptFile,maxdepth,calc,handleUnknown)
-            attributes = bankDescription["attributes"]
-            columns = bankDescription["columns"]
-            labels = bankDescription["label values"]
+        tree =ID3(bankTrainFile,bankDescriptFile,maxdepth,calc,handleUnknown)
+        attributes = bankDescription["attributes"]
+        columns = bankDescription["columns"]
+        labels = bankDescription["label values"]
 
     
     wrongPredict = 0
@@ -114,23 +90,6 @@ def testTrain(calc,examples,maxdepth=-1,carExamples=True,handleUnknown=False):
     #print("MaxDepth "+str(maxdepth)+" " + str(totalSamples-wrongPredict) + "/" + str(totalSamples) + " for " + str(percent)[2:4] + "."+str(percent)[4:5]+"% on training data ")
     return str(percent)
 
-
-#training car data
-header = "small Training"
-output = "InfoGain"
-for i in range(7):
-    header += "\t" + str(i)
-    output += "\t" + str(testTrain("information gain",TrainExamples,i,carExamples="small"))[:5]
-print (header)
-print(output)
-output = "MajorError"
-for i in range(7):
-    output += "\t" + str(testTrain("majority error",TrainExamples,i,carExamples="small"))[:5]
-print(output)
-output = "GiniIndex"
-for i in range(7):
-    output += "\t" + str(testTrain("gini index",TrainExamples,i,carExamples="small"))[:5]
-print(output)
 
 #training car data
 header = "car Training"

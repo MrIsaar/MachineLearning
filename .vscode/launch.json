@@ -17,6 +17,13 @@
             "request": "launch",
             "program": "C:\\Users\\Isaac Gibson\\source\\VS code\\a01\\MachineLearning\\DecisionTree\\testTrees.py",
             "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: TestBag",
+            "type": "python",
+            "request": "launch",
+            "program": "C:\\Users\\Isaac Gibson\\source\\VS code\\a01\\MachineLearning\\Ensemble Learning\\testBag.py",
+            "console": "integratedTerminal"
         }
     ]
 }
