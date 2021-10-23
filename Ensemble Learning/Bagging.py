@@ -5,7 +5,7 @@ from ID3 import ID3,getResult,entropy
 from ID3Constructor import ID3work,MostCommonLabel,solveNumberic,ID3Tree
 
 class bagging():
-    def __init__(self,CSVfile,dataDescFile,T=5):
+    def __init__(self,CSVfile,dataDescFile,T):
         self.description = proccesDesc(dataDescFile)
         self.T = T
         self.examples = processCSV(CSVfile)

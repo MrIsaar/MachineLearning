@@ -3,6 +3,7 @@ from proccessFiles import processCSV
 from sys import platform
 from AdaBoost import AdaBoost
 from Bagging import bagging
+from forest import Forest
 import os
 
 def bankfiles(filenameEnd):
@@ -42,7 +43,7 @@ TestFile = genericfiles("small","test.csv")
 DescriptFile = genericfiles("small","data-desc.txt")
 TrainExamples = processCSV(TrainFile)
 
-"""
+
 function = AdaBoost(TrainFile,DescriptFile,5)
 errors= 0
 total= 0
@@ -53,7 +54,7 @@ for sample in TrainExamples:
     total +=1  
 print("train small: ",errors , " errors out of ", total)
 
-"""
+
 
 
 bankTrainFile = bankfiles("train.csv")
@@ -65,7 +66,7 @@ bankTestExamples = processCSV(bankTestFile)
 bankDescription = proccesDesc(bankDescriptFile)
 
 output = ""
-"""
+
 
 print("-,train,Test")
 fullOut = "-,train,Test\n"
@@ -99,11 +100,11 @@ file = open(genericfiles("results","bankboostResults.txt"),"w")
 file.write(fullOut)
 file.close()
 
-"""
 
-print("Small Training")
+
+print("Small Training bagging")
 output = ""
-for t in range(0,5):
+for t in range(1,5):
     bag = bagging(TrainFile,DescriptFile,t)
     output = "" + str(t)
     errors= 0
@@ -116,6 +117,7 @@ for t in range(0,5):
     #print("train: ",errors , " errors out of ", total)
     output += "," + str(1-(errors/total))[:5]
 print(output)
+
 
 print("bank Training")
 fullOut = ""
@@ -146,3 +148,50 @@ file = open(genericfiles("results","bankbagResults.txt"),"w")
 file.write(fullOut)
 file.close()  
 
+
+print("Small Training forest")
+output = ""
+for t in range(1,5):
+    forest = Forest(TrainFile,DescriptFile,t)
+    output = "" + str(t)
+    errors= 0
+    total= 0
+    for sample in TrainExamples: 
+        testResult = forest.Result(sample)
+        if (sample[len(sample)-1] != testResult ):
+            errors += 1
+        total +=1  
+    #print("train: ",errors , " errors out of ", total)
+    output += "," + str(1-(errors/total))[:5]
+print(output)
+
+
+
+print("forest Training")
+fullOut = ""
+for t in range(1,500):
+    bag = Forest(bankTrainFile,bankDescriptFile,t)
+    output = "" + str(t)
+    errors= 0
+    total= 0
+    for sample in bankTrainExamples: 
+        testResult = bag.bagResult(sample)
+        if (sample[len(sample)-1] != testResult ):
+            errors += 1
+        total +=1  
+    #print("train: ",errors , " errors out of ", total)
+    output += "," + str(1-(errors/total))[:5] 
+    errors= 0
+    total= 0
+    for sample in bankTestExamples: 
+        testResult = bag.bagResult(sample)
+        if (sample[len(sample)-1] != testResult ):
+            errors += 1
+        total +=1  
+    #print("train: ",errors , " errors out of ", total)
+    output += "," + str(1-(errors/total))[:5]
+    fullOut += output + "\n"
+    print(output)
+file = open(genericfiles("results","bankforestResults.txt"),"w")
+file.write(fullOut)
+file.close() 

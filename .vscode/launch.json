@@ -24,6 +24,13 @@
             "request": "launch",
             "program": "C:\\Users\\Isaac Gibson\\source\\VS code\\a01\\MachineLearning\\Ensemble Learning\\testBag.py",
             "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: TestGradient",
+            "type": "python",
+            "request": "launch",
+            "program": "C:\\Users\\Isaac Gibson\\source\\VS code\\a01\\MachineLearning\\LMS\\testGradient.py",
+            "console": "integratedTerminal"
         }
     ]
 }
