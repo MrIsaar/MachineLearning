@@ -22,7 +22,7 @@ def genericfiles(folder,filenameEnd):
 smallLMSCSV= genericfiles("small","lmsTrain.csv")
 concreteCSV = genericfiles("concrete","train.csv")
 TrainExamples = strtofloat(processCSV(smallLMSCSV))
-
+"""
 small = gradent(smallLMSCSV,0.3,0.1)
 error = 0
 total = 0
@@ -33,7 +33,7 @@ for sample in TrainExamples:
         error += 1
     total += 1
 print(str(error)+ " / "+str(total))
-
+"""
 concrete = gradent(concreteCSV,0.3,0.1)
 error = 0
 total = 0

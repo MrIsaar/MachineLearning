@@ -170,12 +170,12 @@ print(output)
 print("forest Training")
 fullOut = ""
 for t in range(1,500):
-    bag = Forest(bankTrainFile,bankDescriptFile,t)
+    tree = Forest(bankTrainFile,bankDescriptFile,t)
     output = "" + str(t)
     errors= 0
     total= 0
     for sample in bankTrainExamples: 
-        testResult = bag.bagResult(sample)
+        testResult = tree.Result(sample)
         if (sample[len(sample)-1] != testResult ):
             errors += 1
         total +=1  
@@ -184,7 +184,7 @@ for t in range(1,500):
     errors= 0
     total= 0
     for sample in bankTestExamples: 
-        testResult = bag.bagResult(sample)
+        testResult = tree.Result(sample)
         if (sample[len(sample)-1] != testResult ):
             errors += 1
         total +=1  

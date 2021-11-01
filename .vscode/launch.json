@@ -31,6 +31,13 @@
             "request": "launch",
             "program": "C:\\Users\\Isaac Gibson\\source\\VS code\\a01\\MachineLearning\\LMS\\testGradient.py",
             "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: TestPerceptron",
+            "type": "python",
+            "request": "launch",
+            "program": "C:\\Users\\Isaac Gibson\\source\\VS code\\a01\\MachineLearning\\Perceptron\\testPerc.py",
+            "console": "integratedTerminal"
         }
     ]
 }

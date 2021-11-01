@@ -44,8 +44,10 @@ class gradent():
     def descent(self):
         
         self.costs = [0 for k in range(3)]
+        self.costsrecord = []
         min = 0
         while self.e < self.cost():
+            self.costsrecord.append(self.cost())
             self.costs[min]=(self.cost())
             dJ = calcGradent(self.samples,self.w)
             wnext = [(self.w[i] - self.r* (dJ[i]/abs(dJ[i]))) for i in range(len(self.w))]
