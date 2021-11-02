@@ -60,7 +60,7 @@ def testAlgorithm(method,epochs):
     return output
 
 testingMethod = "voted"
-testBias = True
+testBias = False
 bigTest = False
 count = 0
 error = 0
