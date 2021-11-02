@@ -30,8 +30,9 @@ def testAlgorithm(method,epochs):
         else:
             error += 1
         total +=1
-    print(method," training ",epochs," count/total: ",count,"/",total)
-    output = str(epochs) +","+ str((count+0.000001)/total)[:5] 
+    print(method," training ",epochs," error/total: ",error,"/",total)
+    output = str(epochs) +","+ str((error+0.000001)/total)[:5]
+    
 
     total = 0
     error = 0
@@ -45,8 +46,11 @@ def testAlgorithm(method,epochs):
         else:
             error += 1
         total +=1
-    print(method," testing ",epochs," count/total: ",count,"/",total)
-    output += "," + str((count+0.000001)/total)[:5]
+    print(method," testing ",epochs," error/total: ",error,"/",total)
+    output += "," + str((error+0.000001)/total)[:5]
+
+    print(method," weights\n", str(percep.w),"\n bias: ", str(percep.bias),"\n")
+    output += "\n\"" + str(percep.w) + "\"," + str(percep.bias)
     return output
 
 testingMethod = "voted"
@@ -96,11 +100,11 @@ if bigTest:
 
 for method in ["standard","voted","average"]:
     output = method + "\nepochs,train,test\n"
-    for i in range(10):
-        
-        output += testAlgorithm(method,i+1) + "\n"
     
-    file = open(method + "Results.csv","w")
+        
+    output += testAlgorithm(method,10) + "\n"
+    
+    file = open(method + "weight.csv","w")
     file.write(output)
     file.close() 
 
