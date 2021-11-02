@@ -30,7 +30,7 @@ def testAlgorithm(method,epochs):
         else:
             error += 1
         total +=1
-    print(method," training count/total: ",count,"/",total)
+    print(method," training ",epochs," count/total: ",count,"/",total)
     output = str(epochs) +","+ str((count+0.000001)/total)[:5] 
 
     total = 0
@@ -45,13 +45,13 @@ def testAlgorithm(method,epochs):
         else:
             error += 1
         total +=1
-    print(method," testing count/total: ",count,"/",total)
+    print(method," testing ",epochs," count/total: ",count,"/",total)
     output += "," + str((count+0.000001)/total)[:5]
     return output
 
 testingMethod = "voted"
 testBias = True
-bigTest = True
+bigTest = False
 count = 0
 error = 0
 total = 0
