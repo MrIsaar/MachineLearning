@@ -3,6 +3,16 @@ This is a machine learning library developed by ISAAC GIBSON for
 CS5350/6350 in University of Utah
 
 
+ASSIGNMENT 3 NOTE
+
+    this will create the raw output files in the same directory as the Perceptron Algorithm. 
+
+    run the run.sh from the perceptron folder or it will not find the training/test files
+
+note: you may have to use chmod to allow execution of the run.sh file
+    chmod +x run.sh
+
+
 ASSIGNMENT 2 NOTE
 
 My ID3 does not work and is affecting the correctness of this assignmet
