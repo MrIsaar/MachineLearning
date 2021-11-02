@@ -45,59 +45,105 @@ class perceptron():
         if type(self.updateOn) is str:
             if self.updateOn == "standard":
                 self.updatefunc = lambda w,xi,yi,r,bias : self.updateStandard(w,xi,yi,r,bias)
+                self.prediction = lambda sample : self.standardPrediction(sample)
             if self.updateOn == "voted":
                 self.updatefunc = lambda w,xi,yi,r,bias : self.updateVoted(w,xi,yi,r,bias)
+                self.prediction = lambda sample : self.votedPrediction(sample)
                 self.m = 0#[0 for i in range(len(self.examples[0])-1)]
                 self.c = [1]
                 self.w = [self.w]
                 self.bias = [self.bias]
             if self.updateOn == "average":
                 self.updatefunc = lambda w,xi,yi,r,bias : self.updateAverage(w,xi,yi,r,bias)
+                self.prediction = lambda sample : self.averagePrediction(sample)
         else:
             self.updatefunc = self.updateOn
         
 
 
     def updateStandard(self,w,xi,yi,r,bias):
-
         #predict
         wx = 0 
-        for j in range(len(xi)):
-            wx += w[j] * xi[j] 
-        wx += bias
         sample = xi.copy()
         sample.append(yi)
-        wx = self.prediction(sample)
-
+        wx = self.standardPrediction(sample)
         #update
-        if yi * wx <= 0 or True:
-            
+        if yi * wx <= 0 or True:            
             error = yi - wx
             for j in range(len(w)):
                 #w[j] +=  r*yi*xi[j]
                 w[j] +=  r*error*xi[j]
-
-            #bias
             #bias += r*yi*1
             bias += r*error
             self.bias =bias
         else:
             pass
         return w
+
+    def standardPrediction(self,sample):
+        xi = sample[:len(self.w)]
+        wx=0
+        for j in range(len(xi)):
+            wx += (self.w[j] * xi[j] )
+        wx += self.bias
+        if wx >= 0.0:
+            return 1.0
+        return 0.0
+        
+
+    def newupdateVoted(self,w,xi,yi,r,bias):
+        #predict
+        wx=0
+        for j in range(len(xi)):
+            wx += (self.w[j] * xi[j] )
+        wx += self.bias
+
+        if wx >= 0.0:
+            wx = 1.0
+        else:
+            wx = 0.0
+        
+        #update
+        error = yi - wx
+        if error != 0:            
+            
+            wm = w.copy()
+            for j in range(len(w)):
+                #w[j] +=  r*yi*xi[j]
+                wm[j] +=  r*error*xi[j]
+            #bias += r*yi*1
+            bias += r*error
+            self.bias.append(bias)
+            self.m = self.m+1
+            self.w.append(wm)
+            self.c.append(1)
+
+            return wm
+        else:
+            self.c[self.m]+= 1
+            return w
+        
+    
         
 
     def updateVoted(self,w,xi,yi,r,bias):
-        wx = 0 
-         
+        wx = 0          
+
         for j in range(len(xi)):
-            wx += w[self.m][j] * xi[j] 
-        wx += w[self.m][len(w[self.m])-1] * 1
-        if yi * wx <= 0:
+            wx += (self.w[self.m][j] * xi[j] )
+        wx += self.bias[self.m]
+        if wx >= 0.0:
+            wx = 1.0
+        else:
+            wx = 0.0
+     
+        error = yi - wx
+        if error > 0.01 or error < -0.01:
+
             wj = []
-            
-            for j in range(len(w[self.m])-1):
-                wj.append(w[self.m][j] + r*yi*xi[j])
-            bias.append( bias[self.m] + r*yi*1)
+            for j in range(len(w[self.m])):
+                wj.append(w[self.m][j] + r*error*xi[j])
+            bias.append( bias[self.m] + r*error)
 
             self.m = self.m+1
             w.append(wj)
@@ -107,42 +153,39 @@ class perceptron():
         self.bias = bias
         return w
 
+    def votedPrediction(self,sample):
+        xi = sample[:len(self.w[0])]
+        sum = 0
+        for i in range(len(self.w)):
+            
+            wx=0
+            for j in range(len(xi)):
+                wx += (self.w[i][j] * xi[j] )
+            wx += self.bias[i]
+            #pred = 0.0
+            #if wx >= 0.0:
+                #pred = 1.0
+            sum += self.c[i]**(1.3) * wx
+        if sum >= 0.0:
+            return 1.0
+        return 0.0
 
-    def updateAverage(w,xi,yi,r):
+    def updateAverage(self,w,xi,yi,r,bias):
+        raise Exception("not implemented")
+
+    def averagePrediction(self,sample):
         raise Exception("not implemented")
     
         
         
-    def prediction(self,sample):
-        xi = sample[:len(self.w)]
-        wx=0
-        for j in range(len(xi)):
-            wx += (self.w[j] * xi[j] )
-        wx += self.bias
-        if wx >= 0.0:
-            return 1.0
-        return 0.0
+    
         #
         # return wx/abs(wx)
 
 
 
 
-    def votedPrediction(self,sample):
-        xi = sample[:len(self.w)-1]
-        sum = 0
-        for i in range(len(self.w)):
-            if i == 0:
-                i = 1
-            wx=0
-            for j in range(len(xi)):
-                wx += (self.w[i][j] * xi[j] )
-            try:
-                pred = wx/abs(wx)
-            except ZeroDivisionError:
-                pred=1
-            sum = self.c[i] * pred
-        return sum/abs(sum)
+    
 
         
 

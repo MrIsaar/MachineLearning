@@ -31,7 +31,7 @@ def testAlgorithm(method,epochs):
             error += 1
         total +=1
     print(method," training count/total: ",count,"/",total)
-    output = str(epochs) +","+ str(count/total)[:-5] 
+    output = str(epochs) +","+ str((count+0.000001)/total)[:5] 
 
     total = 0
     error = 0
@@ -46,11 +46,12 @@ def testAlgorithm(method,epochs):
             error += 1
         total +=1
     print(method," testing count/total: ",count,"/",total)
-    output += str(count/total)[:-5]
+    output += "," + str((count+0.000001)/total)[:5]
     return output
 
-testBias = False
-bigTest = False
+testingMethod = "voted"
+testBias = True
+bigTest = True
 count = 0
 error = 0
 total = 0
@@ -58,7 +59,7 @@ total = 0
 
 if testBias:
     samples = [[1,2,1],[2,3,0],[3,1,1],[1,2,1],[2,3,0],[3,1,1],[1,2,1],[2,3,0],[3,1,1],[1,2,1],[2,3,0],[3,1,1],[1,2,1],[2,3,0],[3,1,1]]
-    percep = perceptron(samples,10,0.1)
+    percep = perceptron(samples,10,0.1,testingMethod)
     for j in range(len(samples)):
         pred = percep.prediction(samples[j])
         if samples[j][len(samples[j])-1] == pred:
@@ -66,7 +67,7 @@ if testBias:
         else:
             error += 1
         total +=1
-
+    print(testingMethod," bias1: (",count,"/",total,")")
     samples = [[-1,-2,0],[-2,-3,1],[-3,-1,0],[-1,-2,0],[-2,-3,1],[-3,-1,0],[-1,-2,0],[-2,-3,1],[-3,-1,0]]
     percep = perceptron(samples,20,0.1)
     for j in range(len(samples)):
@@ -76,10 +77,11 @@ if testBias:
         else:
             error += 1
         total +=1
+    print(testingMethod," biasfull: (",count,"/",total,")")
 if bigTest:
     for i in range(1000):
         samples = randomPoints(2,3)
-        percep = perceptron(samples,100,0.1)
+        percep = perceptron(samples,100,0.1,testingMethod)
         for j in range(len(samples)):
             pred = percep.prediction(samples[j])
             if samples[j][len(samples[j])-1] == pred:
@@ -88,14 +90,14 @@ if bigTest:
                 error += 1
             total +=1
     print("count/total: ",count,"/",total)
-    if(error):
-        print("errors: ",error)
+    
 
 
 
 for method in ["standard","voted","average"]:
+    output = method + "\nepochs,train,test\n"
     for i in range(10):
-        output = method + "\nepochs,train,test\n"
+        
         output += testAlgorithm(method,i+1) + "\n"
     
     file = open(method + "Results.csv","w")
