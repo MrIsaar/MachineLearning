@@ -63,6 +63,8 @@ class perceptron():
                 self.a = self.w.copy()
                 self.abias = 0
                 self.done = False
+                self.archive = []
+                self.archivebias = []
         else:
             self.updatefunc = self.updateOn
         
@@ -160,12 +162,16 @@ class perceptron():
         #update
         if yi * wx <= 0 or True:            
             error = yi - wx
+            if error != 0:
+                self.archive.append(w)
+                self.archivebias.append(bias)
             for j in range(len(w)):
                 #w[j] +=  r*yi*xi[j]
                 w[j] +=  r*error*xi[j]
             #bias += r*yi*1
             bias += r*error
             self.bias =bias
+            
         else:
             pass
         for j in range(len(w)):

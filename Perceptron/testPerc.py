@@ -1,4 +1,5 @@
 import random
+import sys
 from proccessFiles import processCSV
 from perceptron import perceptron
 def randomPoints(dim,points):
@@ -20,7 +21,8 @@ def testAlgorithm(method,epochs):
     total = 0
     error = 0
     count = 0
-    samples = "bank-note\\train.csv"
+    samples = sys.argv[1]
+    #samples = "bank-note\\train.csv"
     percep = perceptron(samples,epochs,0.1,updateOn=method)
     samples = processCSV(samples)
     for j in range(len(samples)):
@@ -51,6 +53,9 @@ def testAlgorithm(method,epochs):
 
     print(method," weights\n", str(percep.w),"\n bias: ", str(percep.bias),"\n")
     output += "\n\"" + str(percep.w) + "\"," + str(percep.bias)
+    if(method == "average"):
+        for i in range(len(percep.archive)):
+            output += "\narchive\n\"" + str(percep.archive[i]) + "\"," + str(percep.archivebias[i])
     return output
 
 testingMethod = "voted"
@@ -96,7 +101,12 @@ if bigTest:
     print("count/total: ",count,"/",total)
     
 
-
+if len(sys.argv) == 1:
+    print ("you did not provide testing or training file")
+    quit()
+if len(sys.argv) == 2:
+    print ("you did not provide testing file")
+    quit()
 
 for method in ["standard","voted","average"]:
     output = method + "\nepochs,train,test\n"
