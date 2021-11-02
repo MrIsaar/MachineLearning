@@ -40,7 +40,8 @@ def testAlgorithm(method,epochs):
     error = 0
     count = 0
     
-    samples = processCSV("bank-note\\test.csv");
+    #samples = processCSV("bank-note\\test.csv");
+    samples = processCSV(sys.argv[2]);
     for j in range(len(samples)):
         pred = percep.prediction(samples[j])
         if samples[j][len(samples[j])-1] == pred:
