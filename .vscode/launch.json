@@ -37,7 +37,8 @@
             "type": "python",
             "request": "launch",
             "program": "C:\\Users\\Isaac Gibson\\source\\VS code\\a01\\MachineLearning\\Perceptron\\testPerc.py",
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "args": ["C:\\Users\\Isaac Gibson\\source\\VS code\\a01\\MachineLearning\\bank-note\\train.csv","C:\\Users\\Isaac Gibson\\source\\VS code\\a01\\MachineLearning\\bank-note\\test.csv"]
         }
     ]
 }

@@ -163,7 +163,7 @@ class perceptron():
         if yi * wx <= 0 or True:            
             error = yi - wx
             if error != 0:
-                self.archive.append(w)
+                self.archive.append(w.copy())
                 self.archivebias.append(bias)
             for j in range(len(w)):
                 #w[j] +=  r*yi*xi[j]

@@ -16,6 +16,25 @@ def randomPoints(dim,points):
         i-=1
     return p 
 
+def weightToStr(percep,method):
+    output = ""
+    if method == "standard":
+        return str(percep.w) + " bias: " + str(percep.bias)
+    if method == "voted":
+        for m in range(len(percep.w)):
+            output += "count"+ str(percep.c[m])+"["
+            for wi in range(len(percep.w[m])):
+                output += str(percep.w[m][wi])[:5] + ","
+            output += "] bias: " + str(percep.bias[m])[:5] + "\n"
+    if method == "average":
+        for m in range(len(percep.archive)):
+            output += "["
+            for wi in range(len(percep.archive[m])):
+                output +=  str(percep.archive[m][wi])[:5] + ","
+            output += "] bias: " + str(percep.archivebias[m])[:5] + "\n"
+    return output
+
+    
 def testAlgorithm(method,epochs):
     
     total = 0
@@ -52,11 +71,15 @@ def testAlgorithm(method,epochs):
     print(method," testing ",epochs," error/total: ",error,"/",total)
     output += "," + str((error+0.000001)/total)[:5]
 
-    print(method," weights\n", str(percep.w),"\n bias: ", str(percep.bias),"\n")
-    output += "\n\"" + str(percep.w) + "\"," + str(percep.bias)
+    print(method," weights\n", weightToStr(percep,method),"\n bias: ", str(percep.bias),"\n")
     if(method == "average"):
-        for i in range(len(percep.archive)):
-            output += "\narchive\n\"" + str(percep.archive[i]) + "\"," + str(percep.archivebias[i])
+        output += "\n\"" + str(percep.a) + "\"," + str(percep.abias)
+        output += weightToStr(percep,method)
+        #for i in range(len(percep.archive)):
+            #output += "\narchive\n\"" + str(percep.archive[i]) + "\"," + str(percep.archivebias[i])
+    else:
+        output += "\n\"" + weightToStr(percep,method) + "\""
+    
     return output
 
 testingMethod = "voted"
