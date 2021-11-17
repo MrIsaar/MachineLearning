@@ -1,4 +1,6 @@
 import math
+import random
+import sys
 def cost (y,w,x,b):
     if(len(y) != len(x)):
         raise Exception()
@@ -54,6 +56,41 @@ def distfromline(line,bias,point,normalize=1):
     #print(output+" |")
     #print("\\sqrt(" + str(denom) + ")")
     return sum/mag
+
+def randomRoll(num,size):
+    sum = 0
+    for i in range(num):
+        
+        sum += random.randrange(1,size+1)
+    return sum
+
+sum = [0 for i in range(6*8+1)]
+count = 0
+sys.stdout.write("\r"+ str(0))
+sys.stdout.flush()
+size = 100000
+for i in range(1,size+1):
+    sum[randomRoll(8,6)]+=1
+    count+=1
+    if i % math.floor(size/20) == 0:
+        update = "|"
+        for j in range(math.floor((i*20)/size)):
+            update += "#"
+        for j in range(math.floor(20 - (i/size)*20)):
+            update += " "
+        update += "|"
+        sys.stdout.write("\r"+update)
+        sys.stdout.flush()
+print("|")
+total = 0.0
+for i in range(len(sum)):
+    if sum[i] != 0:
+        print (i,": ",str(100*(sum[i]/count))[:5],"%")
+        total += sum[i]/count
+print (total)
+    
+exit()
+
 
 line = [-1,-1,-1,-1,1,1,1,1,0,0,0]
 bias = -1
