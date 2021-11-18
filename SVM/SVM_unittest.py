@@ -69,7 +69,7 @@ class TryTesting(TestCase):
     def test_bais(self):
         """tests that the prediction accounts for bias
         """
-        examples = [[1,2,1],[0,3,1],[2,3,-1],[2,4,-1]]
+        examples = [[1,2,1],[3,0,1],[2,3,-1],[2,4,-1]]
         
         c = [(100/873),(500/873),(700/873)]
         Svm = svm(examples,10,0.1,2,c[0],"sgd")
@@ -81,7 +81,7 @@ class TryTesting(TestCase):
             if example[-1:][0] * pred >= 0:
                 count +=1
             else:
-                message = "pred:" + str(pred) + " label: " + str(example[-1:][0]) + " bias: " + str(Svm.bias)
+                message = "pred:" + str(pred) + " label: " + str(example[-1:][0]) + " bias: " + str(Svm.w[-1:])
                 self.fail(message)
             total +=1
     #print("correct spliting: ",str(count),"/",str(total))

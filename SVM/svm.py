@@ -1,7 +1,9 @@
 import numpy as np
 from proccessFiles import processCSV
 import random as r
+BIAS_X = -1
 class svm(object):
+    
     def __init__(self, examples, t, learningrate,learninga,C,learningtype="sgd"):
         self.C = C
         self.r = learningrate
@@ -12,23 +14,44 @@ class svm(object):
         if(type(examples) is str):
             self.examples = processCSV(examples)
 
-        self.w = np.zeros(len(self.examples[0])-1)
+        self.w = np.zeros(len(self.examples[0]))
         #len(self.examples[0])-1
-        self.bias = 0
+        #self.bias = self.w[-1:]
         if learningtype == "sgd":
             self.sgdSVM()
 
     def prediction(self,sample):
         xi = sample[:-1]
-        
-        return np.dot(self.w,xi) + self.bias
+        xi.append(BIAS_X) #bias value
+        return np.dot(self.w,xi)  #+ self.bias
 
-    def updateWeight(self,example,t,error):
+    def updateWeight(self,example,t):
         rc = self.learningRate(t)*self.C
         #testing  w ← w − �t [w0; 0] + �t C N yi xi
-        xy = np.multiply(example[:-1],example[-1:])
-        self.w = self.w - self.learningRate(t)* self.w + xy*rc
-        self.bias = self.bias + np.multiply(example[-1:],rc)
+        xi = example[:-1]
+        xi.append(BIAS_X) #bias value
+        xy = np.multiply(xi,example[-1:])
+        update = rc*( xy + (-2 * (1/t)*self.w))
+        self.w = self.w + update
+        
+    
+    def sgdSVM(self):
+        for t in range(1,self.t):
+            r.shuffle(self.examples)
+            wrongguess = False
+            for i in range(len(self.examples)):
+                pred = self.prediction(self.examples[i])
+                error = self.examples[i][len(self.examples[i])-1] * pred
+                if error <= 1:
+                    self.updateWeight(self.examples[i],t)
+                    wrongguess = True
+                else: 
+                    self.w = np.multiply(self.w,(1-self.learningRate(t)))
+            if ( not wrongguess) :
+                break
+            
+        
+        #self.bias = self.bias + np.multiply(example[-1:],rc)
         #previous
         #for j in range(len(self.w)):
         #    xy = np.multiply(example[j],example[-1:])
@@ -37,20 +60,6 @@ class svm(object):
         
         return self.w
 
-    def sgdSVM(self):
-        for t in range(self.t):
-            r.shuffle(self.examples)
-            wrongguess = False
-            for i in range(len(self.examples)):
-                pred = self.prediction(self.examples[i])
-                error = self.examples[i][len(self.examples[i])-1] * pred
-                if error <= 1:
-                    self.updateWeight(self.examples[i],t,error)
-                    wrongguess = True
-                else: 
-                    self.w = np.multiply(self.w,(1-self.learningRate(t)))
-            if ( not wrongguess) :
-                break
 
 
 
