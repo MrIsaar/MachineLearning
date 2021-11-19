@@ -16,6 +16,8 @@ def processCSV(CSVfile, debugprint=0):
             terms = line.strip().split(',')
             for i in range(len(terms)):
                 terms[i] = float(terms[i])
+            if(terms[len(terms)-1] == 0):
+                terms[len(terms)-1] = -1
             items.append(terms)
             if debugprint > index:
                 print(items[index])
