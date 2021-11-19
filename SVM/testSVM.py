@@ -89,26 +89,29 @@ def testAlgorithm(method,epochs,c,learninga):
     #print(method," weights\n", weightToStr(percep,method),"\n")
     
     #output += "\n\"" + weightToStr(percep,method) + "\""
-    output = (output,(error /total))
+    output = (output,(error /total),percep)
     
     return output
 
-def test(hyper,out,learninga,algorithm):
-    output = "c="+ str(math.ceil(hyper*873))[:3] + "/873" + "\nepochs,train,test\n"
+def test(hyper,out,learninga,algorithm,testsize=20):
+    a = learninga
+    if a == hyper:
+        a = str(math.ceil(hyper*873))[:3] + "/873"
+    output = str(algorithm)+" c="+ str(math.ceil(hyper*873))[:3] + "/873 a=" + str(a) + "\nepochs,train,test,weights\n"
     count = 0
     trainErr = 0
     testErr = 0
-    testsize = 20
+   
     
     for i in range(testsize):
         count+=1
-        trer,tser = testAlgorithm(algorithm,10,hyper,learninga)
+        trer,tser,svm = testAlgorithm(algorithm,10,hyper,learninga)
         #progressBar(i + testsize*c.index(hyper),testsize*len(c),40)
         trainErr += trer
         testErr += tser
         if i % math.floor(testsize/4.0) == 0:
-            print(algorithm,": ", i,"/",testsize, " hyper: " , math.ceil(hyper*873),"/873")
-    output += "10," + str(trainErr/count)+","+str(testErr/count)  + "\n"
+            print(algorithm," progress: ", i,"/",testsize, " hyper: " , math.ceil(hyper*873),"/873")
+    output += "10," + str(trainErr/count)+","+str(testErr/count) + "," + str(svm.w) + "\n"
     updateOut(output,out)
 
 
@@ -127,10 +130,15 @@ def updateOut(out,output):
     threadLock.release()
     
   
-print("starting SGD")  
+print("starting SGD: warning takes a long time")  
 for hyper in c:
     """multithread testing for faster results"""
     thread = threading.Thread(target=test,args=(hyper,output,learninga,"sgd"))
+    thread.start()
+    
+    threads.append(thread)
+    
+    thread = threading.Thread(target=test,args=(hyper,output,hyper,"sgd"))
     thread.start()
     
     threads.append(thread)
@@ -155,7 +163,7 @@ for hyper in c:
 for thread in threads:
     thread.join()
 print(output)
-file = open("sgd" + "weight.csv","w")
+file = open("sgd" + "results.csv","w")
 for out in output:
     if out.startswith("sgd"):
         file.write(str(out))
@@ -167,7 +175,7 @@ print ("starting dual")
 """ DUAL  """
 for hyper in c:
     """multithread testing for faster results"""
-    thread = threading.Thread(target=test,args=(hyper,output,learninga,"dual"))
+    thread = threading.Thread(target=test,args=(hyper,output,learninga,"dual",1))
     thread.start()
     
     threads.append(thread)
@@ -197,7 +205,7 @@ for out in output:
         file.write(str(out))
 file.close() 
 """
-file = open("dual" + "weight.csv","w")
+file = open("dual" + "results.csv","w")
 for out in output:
     
     if out.startswith("dual"):

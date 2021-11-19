@@ -30,7 +30,7 @@ class Dualtest(TestCase):
             if example[-1:][0] * pred >= 0:
                 count +=1
             else:
-                message = "pred:" + str(pred) + " sample: " + str(example) + "weight:" + printw(Svm.w)
+                message = "\npred:" + str(pred) + " sample: " + str(example) + "weight:" + printw(Svm.w)
                 self.fail(message)
             total +=1
     #print("correct spliting: ",str(count),"/",str(total))
@@ -51,7 +51,7 @@ class Dualtest(TestCase):
             if example[-1:][0] * pred >= 0:
                 count +=1
             else:
-                message = "pred:" + str(pred) + " sample: " + str(example) + "weight:" + printw(Svm.w)
+                message = "\npred:" + str(pred) + " sample: " + str(example) + "weight:" + printw(Svm.w)
                 self.fail(message)
             total +=1
     #print("correct spliting: ",str(count),"/",str(total))
@@ -72,7 +72,7 @@ class Dualtest(TestCase):
             if example[-1:][0] * pred >= 0:
                 count +=1
             else:
-                message += "pred:" + str(pred) + " sample: " + str(example) + "weight:" + printw(Svm.w) + "\n"
+                message += "\npred:" + str(pred) + " sample: " + str(example) + " weight:" + printw(Svm.w) #+ "\n"
                 #self.fail(message)
             total +=1
     #print("correct spliting: ",str(count),"/",str(total))
@@ -96,7 +96,7 @@ class Dualtest(TestCase):
             if example[-1:][0] * pred >= 0:
                 count +=1
             else:
-                message = "pred:" + str(pred) + " label: " + str(example[-1:][0]) + " weight: " + printw(Svm.w)
+                message = "\npred:" + str(pred) + " label: " + str(example[-1:][0]) + " weight: " + printw(Svm.w)
                 self.fail(message)
             total +=1
     #print("correct spliting: ",str(count),"/",str(total))
@@ -117,7 +117,7 @@ class Dualtest(TestCase):
             if example[-1:][0] * pred >= 0:
                 count +=1
             else:
-                message = "pred:" + str(pred) + " label: " + str(example[-1:][0]) + " weight: " + printw(Svm.w)
+                message = "\npred:" + str(pred) + " label: " + str(example[-1:][0]) + " weight: " + printw(Svm.w)
                 self.fail(message)
             total +=1
     #print("correct spliting: ",str(count),"/",str(total))

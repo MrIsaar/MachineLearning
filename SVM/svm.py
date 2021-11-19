@@ -128,9 +128,11 @@ class svm(object):
         MyBounds = [(0,self.C) for a in self.alpha] # 0 <= alpha <= C
         self.constraint = lambda alpha : np.dot(alpha,self.y)
         MyConstraints = ({'type':'eq','fun':self.constraint})# sum(i){ aiyi } = 0 
-        result = scipy.optimize.minimize(self.objective,self.alpha,args=(self.x,self.y),bounds=MyBounds,constraints=MyConstraints)
+        result = scipy.optimize.minimize(self.objective,self.alpha,args=(self.x,self.y),method="SLSQP",bounds=MyBounds,constraints=MyConstraints)
         self.alpha = result.x
-        print(self.constraint(self.alpha))
+        if(not result.success):
+            print("somthing went wrong with the dual SVM:\n ",result.message)
+        #print(self.constraint(self.alpha))
         self.w = self.wstar()
 
 

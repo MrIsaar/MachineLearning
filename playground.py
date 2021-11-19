@@ -1,110 +1,33 @@
 import math
 import random
 import sys
-def cost (y,w,x,b):
-    if(len(y) != len(x)):
-        raise Exception()
-    sum = 0
-    for i in range(0,len(y)):
-        suminner = 0
-        if(len(x[i]) != len(w)):
-                raise Exception()
-        for j in range (0,len(w)):
-            suminner += (x[i][j] * w[j])
-        suminner = (y[i] - suminner)**2
-        sum += suminner
-    sum = sum/2
-    return sum + b/2
+import numpy as np
 
-def generate():
-    s = [-1,1]
-    r = []
-    for x1 in range(2):
-        for y2 in range(2):
-            for z3 in range(2):
-                for a4 in range(2):
-                    for b5 in range(2):
-                        for c6 in range(2):
-                            for d7 in range(2):
-                                for e8 in range(2):
-                                    for f9 in range(2):
-                                        for g10 in range(2):
-                                            for h11 in range(2):
-                                                r.append([s[x1],s[y2],s[z3],s[a4],s[b5],s[c6],s[d7],s[e8],s[f9],s[g10],s[h11] ])
-    return r
-
-
-def distfromline(line,bias,point,normalize=1):
-    if len(line) != len(point):
-        raise Exception("not same dimentions")
-    output = "| bias"
-    denom = 0
-    sum = 0
-    mag = 0
-    for i in range(len(line)):
-        mag += line[i]**2
-        if line[i] != 0:
-            denom += 1
-        sum += (line[i]/normalize)*point[i]
-        sign = "+"
-        if line[i] < 0:
-            sign = "-"
-        if line[i] != 0:
-            output += sign + "x_"+str(i+1)
-    sum = float(abs(sum+bias))
-    mag = math.sqrt(mag)
-    #print(output+" |")
-    #print("\\sqrt(" + str(denom) + ")")
-    return sum/mag
-
-def randomRoll(num,size):
-    sum = 0
-    for i in range(num):
+#examples = [[6.8248, 5.2187, -2.5425, 0.5461, -1], [-0.74324, -0.32902, -0.42785, 0.23317, 1.0], [-1.6637, 3.2881, -2.2701, -2.2224, 1.0], [-1.4174, -2.2535, 1.518, 0.61981, 1.0], [-0.071503, 3.7412, -4.5415, -4.2526, 1.0], [5.1129, -0.49871, 0.62863, 1.1189, -1], [-2.9138, -9.4711, 9.7668, -0.60216, 1.0], [-1.0112, 2.9984, -1.1664, -1.6185, 1.0], [2.9421, 7.4101, -0.97709, -0.88406, -1], [4.3848, -3.0729, 3.0423, 1.2741, -1]]
+examples = [[2,2],[3,4],[2,1]]
+x = np.array(examples)
+a = np.ones(len(x))
+y = np.ones(len(x))
+random.seed(3)
+for i in range(len(x)):
+    a[i] *= random.randrange(1,5)
+    y[i] += random.randrange(0,2)
+sum = 0
+sum2 = 0
+xs = []
+asum = []
+for i in range(len(x)):
+    ina = []
+    xsin = []
+    for j in range(len(x)):
+        others = a[i]*a[j]*y[i]*y[j]
+        sum += np.inner(x[i],x[j])*others
         
-        sum += random.randrange(1,size+1)
-    return sum
-
-sum = [0 for i in range(6*8+1)]
-count = 0
-sys.stdout.write("\r"+ str(0))
-sys.stdout.flush()
-size = 100000
-for i in range(1,size+1):
-    sum[randomRoll(8,6)]+=1
-    count+=1
-    if i % math.floor(size/20) == 0:
-        update = "|"
-        for j in range(math.floor((i*20)/size)):
-            update += "#"
-        for j in range(math.floor(20 - (i/size)*20)):
-            update += " "
-        update += "|"
-        sys.stdout.write("\r"+update)
-        sys.stdout.flush()
-print("|")
-total = 0.0
-for i in range(len(sum)):
-    if sum[i] != 0:
-        print (i,": ",str(100*(sum[i]/count))[:5],"%")
-        total += sum[i]/count
-print (total)
-    
-exit()
-
-
-line = [-1,-1,-1,-1,1,1,1,1,0,0,0]
-bias = -1
-point = [[ 1**(i-1) for i in range(len(line))]]
-
-line = [83,-68]
-bias = 3876
-point = [[98,15],[20,81],[30,98]]
-
-#point = (generate())
-mi = 100
-for i in range(len(point)):
-    c = distfromline(line,bias,point[i])
-    mi = min(mi,c)
-    print("point[",i,"] = ",point[i]," : ",c)
-print (mi)
-
+        asum.append( a[i]*y[i]*a[j]*y[j])
+        xs.append(np.inner(x[i],x[j]))
+val = 0
+#asum = [4.0, 4.0, 6.0, 4.0, 4.0, 6.0, 6.0, 6.0, 9.0]
+val = np.sum(x*y*a)
+print(sum)
+print(val)
+print()
