@@ -1,0 +1,1 @@
+python3.7 ./testSVM.py ../bank-note/train.csv ../bank-note/train.csv

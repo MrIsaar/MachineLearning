@@ -130,7 +130,7 @@ def updateOut(out,output):
     threadLock.release()
     
   
-print("starting SGD: warning takes a long time")  
+print("starting SGD")  
 for hyper in c:
     """multithread testing for faster results"""
     thread = threading.Thread(target=test,args=(hyper,output,learninga,"sgd"))
@@ -171,7 +171,7 @@ file.close()
 
 output = []
 
-print ("starting dual")
+print ("starting dual: warning takes a long time")
 """ DUAL  """
 for hyper in c:
     """multithread testing for faster results"""
