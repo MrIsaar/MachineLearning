@@ -56,7 +56,7 @@ def testAlgorithm(method,epochs,c,learninga):
     samples = sys.argv[1]
     #samples = "bank-note\\train.csv"
     
-    percep = svm(samples,10,0.1,learninga,c,"sgd")
+    percep = svm(samples,10,0.1,learninga,c,method)
     samples = processCSV(samples)
     for j in range(len(samples)):
         pred = percep.prediction(samples[j])
@@ -93,7 +93,7 @@ def testAlgorithm(method,epochs,c,learninga):
     
     return output
 
-def test(hyper,out,learninga):
+def test(hyper,out,learninga,algorithm):
     output = "c="+ str(math.ceil(hyper*873))[:3] + "/873" + "\nepochs,train,test\n"
     count = 0
     trainErr = 0
@@ -102,12 +102,12 @@ def test(hyper,out,learninga):
     
     for i in range(testsize):
         count+=1
-        trer,tser = testAlgorithm("sgd",10,hyper,learninga)
+        trer,tser = testAlgorithm(algorithm,10,hyper,learninga)
         #progressBar(i + testsize*c.index(hyper),testsize*len(c),40)
         trainErr += trer
         testErr += tser
         if i % math.floor(testsize/4.0) == 0:
-            print("sgd: ", i,"/",testsize, " hyper: " , math.ceil(hyper*873),"/873")
+            print(algorithm,": ", i,"/",testsize, " hyper: " , math.ceil(hyper*873),"/873")
     output += "10," + str(trainErr/count)+","+str(testErr/count)  + "\n"
     updateOut(output,out)
 
@@ -126,10 +126,48 @@ def updateOut(out,output):
     output.append(out)
     threadLock.release()
     
-    
+  
+print("starting SGD")  
 for hyper in c:
     """multithread testing for faster results"""
-    thread = threading.Thread(target=test,args=(hyper,output,learninga))
+    thread = threading.Thread(target=test,args=(hyper,output,learninga,"sgd"))
+    thread.start()
+    
+    threads.append(thread)
+    """
+    output += "c="+ str(hyper*873)[:-2] + "/873" + "\nepochs,train,test\n"
+    count = 0
+    trainErr = 0
+    testErr = 0
+    testsize = 50
+    
+    for i in range(testsize):
+        count+=1
+        trer,tser = testAlgorithm("sgd",10,hyper)
+        progressBar(i + testsize*c.index(hyper),testsize*len(c),40)
+        trainErr += trer
+        testErr += tser
+    output += "10," + str(trainErr/count)+","+str(testErr/count)  + "\n"
+   
+"""
+
+#progressBar(40,40,40)
+for thread in threads:
+    thread.join()
+print(output)
+file = open("sgd" + "weight.csv","w")
+for out in output:
+    if out.startswith("sgd"):
+        file.write(str(out))
+file.close() 
+
+output = []
+
+print ("starting dual")
+""" DUAL  """
+for hyper in c:
+    """multithread testing for faster results"""
+    thread = threading.Thread(target=test,args=(hyper,output,learninga,"dual"))
     thread.start()
     
     threads.append(thread)
@@ -152,7 +190,16 @@ for hyper in c:
 for thread in threads:
     thread.join()
 print(output)
+"""
 file = open("sgd" + "weight.csv","w")
 for out in output:
-    file.write(str(out))
+    if out.startswith("sgd"):
+        file.write(str(out))
+file.close() 
+"""
+file = open("dual" + "weight.csv","w")
+for out in output:
+    
+    if out.startswith("dual"):
+        file.write(str(out))
 file.close() 
