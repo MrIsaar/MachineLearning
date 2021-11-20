@@ -20,7 +20,7 @@ def splitExamples(examples):
 
 class svm(object):
     
-    def __init__(self, examples, t, learningrate,learninga,C,learningtype="sgd"):
+    def __init__(self, examples, t, learningrate,learninga,C,learningtype="sgd",kernalTrue = False):
         self.C = C
         self.r = learningrate
         self.a = learninga
@@ -40,6 +40,11 @@ class svm(object):
             self.sgdSVM()
         if learningtype == "dual":
             self.alpha = np.zeros(len(self.examples))
+            self.kernalTrue = kernalTrue
+            self.dualSVM()
+        if learningtype == "kernal":
+            self.alpha = np.zeros(len(self.examples))
+            self.kernalTrue = True
             self.dualSVM()
 
     def prediction(self,sample):
@@ -122,7 +127,7 @@ class svm(object):
         wstar[len(wstar)-1] = bias"""
         return wstar
     
-    def objective(self,alpha,x,y):
+    def objective(self,alpha,x,y,kernal):
         """objective function for dual SVM 
           (1/2) sum(i){sum(j){  yiyj aiaj xi^Txj}} - sum(i){ai}
           
@@ -142,7 +147,16 @@ class svm(object):
                 sum += y[i]*y[j]*alpha[i]*alpha[j]*np.inner(x[i],x[j])
         """
         o = (((alpha*y*np.ones((len(y),len(y)))).T)*alpha*y)
-        val = np.matmul(x,x.T) # xs = val
+        val = []
+        if(not kernal):    
+            val = np.matmul(x,x.T) # xs = val
+        else:
+            for i in range(len(x)):
+                valin = []
+                for j in range(len(x)):
+                    valin.append(self.kernal(x[i],x[j]))
+                val.append(valin)
+            val = np.array(val)
         sum = np.dot(o.flatten(),val.flatten())
         sum /= 2
         val = alpha.sum()
@@ -159,12 +173,33 @@ class svm(object):
         MyBounds = [(0,self.C) for a in self.alpha] # 0 <= alpha <= C
         self.constraint = lambda alpha : np.dot(alpha,self.y)
         MyConstraints = ({'type':'eq','fun':self.constraint})# sum(i){ aiyi } = 0 
-        result = scipy.optimize.minimize(self.objective,self.alpha,args=(self.x,self.y),method="SLSQP",bounds=MyBounds,constraints=MyConstraints)
+        result = scipy.optimize.minimize(self.objective,self.alpha,args=(self.x,self.y,self.kernalTrue),method="SLSQP",bounds=MyBounds,constraints=MyConstraints)
         self.alpha = result.x
         if(not result.success):
             print("somthing went wrong with the dual SVM:\n ",result.message)
         #print(self.constraint(self.alpha))
         self.w = self.wstar()
+        
+    def kernal(self,xi,xj):
+        mag = 0
+        c = 0
+        for i in range(len(xi)):
+            mag += (xi[i] - xj[i])**2
+            c += 1
+        upper = mag
+        """
+        mag= mag **(1/2)
+        upper = (xi - xj)/mag
+        if(mag == 0):
+            upper = np.zeros(upper.shape)
+        else:
+            upper = upper*upper
+        """
+        
+        return np.exp(-(upper/self.r))
+        
+        
+        
 
 
 if __name__ == "__main__":
@@ -172,7 +207,7 @@ if __name__ == "__main__":
     
     c = [(100/873),(500/873),(700/873)]
     Svm = svm(examples,10,0.1,2,c[0],"sgd")
-
+    kernal = Svm.kernal(Svm.x[2][:-1],Svm.x[0][:-1])
     count = 0
     total = 0
     for example in examples:

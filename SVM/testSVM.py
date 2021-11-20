@@ -115,7 +115,14 @@ def test(hyper,out,learninga,algorithm,testsize=20):
     updateOut(output,out)
 
 
+testSGD = True
+testDual = True
+testKernal = True
 
+if len(sys.argv) == 4 and sys.argv[3] != 0:
+    testSGD = sys.argv[3] == 1
+    testDual = sys.argv[3] == 2
+    testKernal = sys.argv[3] == 3
 
 threadLock = threading.Lock()
 threads = []
@@ -129,85 +136,71 @@ def updateOut(out,output):
     output.append(out)
     threadLock.release()
     
+if(testSGD): 
+    print("starting SGD")  
+    for hyper in c:
+        """multithread testing for faster results"""
+        thread = threading.Thread(target=test,args=(hyper,output,learninga,"sgd"))
+        thread.start() 
+        threads.append(thread)
+    
+        thread = threading.Thread(target=test,args=(hyper,output,hyper,"sgd"))
+        thread.start()
+        threads.append(thread)
+    for thread in threads:
+        thread.join()
+    print(output)
+    file = open("sgd" + "results.csv","w")
+    for out in output:
+        if out.startswith("sgd"):
+            file.write(str(out))
+    file.close() 
+
+
+
+if(testDual):
+    output = []
+    print ("starting dual: warning takes a long time")
+    """ DUAL  """
+    for hyper in c:
+        """multithread testing for faster results"""
+        thread = threading.Thread(target=test,args=(hyper,output,learninga,"dual",1))
+        thread.start()
+    
+        threads.append(thread)
   
-print("starting SGD")  
-for hyper in c:
-    """multithread testing for faster results"""
-    thread = threading.Thread(target=test,args=(hyper,output,learninga,"sgd"))
-    thread.start()
-    
-    threads.append(thread)
-    
-    thread = threading.Thread(target=test,args=(hyper,output,hyper,"sgd"))
-    thread.start()
-    
-    threads.append(thread)
-    """
-    output += "c="+ str(hyper*873)[:-2] + "/873" + "\nepochs,train,test\n"
-    count = 0
-    trainErr = 0
-    testErr = 0
-    testsize = 50
-    
-    for i in range(testsize):
-        count+=1
-        trer,tser = testAlgorithm("sgd",10,hyper)
-        progressBar(i + testsize*c.index(hyper),testsize*len(c),40)
-        trainErr += trer
-        testErr += tser
-    output += "10," + str(trainErr/count)+","+str(testErr/count)  + "\n"
-   
-"""
 
-#progressBar(40,40,40)
-for thread in threads:
-    thread.join()
-print(output)
-file = open("sgd" + "results.csv","w")
-for out in output:
-    if out.startswith("sgd"):
-        file.write(str(out))
-file.close() 
+    for thread in threads:
+        thread.join()
+    print(output)
 
-output = []
+    file = open("dual" + "results.csv","w")
+    for out in output:
+    
+        if out.startswith("dual"):
+            file.write(str(out))
+    file.close() 
+ 
+    
+if(testKernal):
+    output = []
+    print ("starting kernal: warning takes a long time")
+    """ KERNAL  """
+    for hyper in c:
+        """multithread testing for faster results"""
+        thread = threading.Thread(target=test,args=(hyper,output,learninga,"kernal",1))
+        thread.start()
+    
+        threads.append(thread)
+  
+    #progressBar(40,40,40)
+    for thread in threads:
+        thread.join()
+    print(output)
 
-print ("starting dual: warning takes a long time")
-""" DUAL  """
-for hyper in c:
-    """multithread testing for faster results"""
-    thread = threading.Thread(target=test,args=(hyper,output,learninga,"dual",1))
-    thread.start()
+    file = open("kernal" + "results.csv","w")
+    for out in output:
     
-    threads.append(thread)
-    """
-    output += "c="+ str(hyper*873)[:-2] + "/873" + "\nepochs,train,test\n"
-    count = 0
-    trainErr = 0
-    testErr = 0
-    testsize = 50
-    
-    for i in range(testsize):
-        count+=1
-        trer,tser = testAlgorithm("sgd",10,hyper)
-        progressBar(i + testsize*c.index(hyper),testsize*len(c),40)
-        trainErr += trer
-        testErr += tser
-    output += "10," + str(trainErr/count)+","+str(testErr/count)  + "\n"
-    """
-#progressBar(40,40,40)
-for thread in threads:
-    thread.join()
-print(output)
-"""
-file = open("sgd" + "weight.csv","w")
-for out in output:
-    if out.startswith("sgd"):
-        file.write(str(out))
-file.close() 
-"""
-file = open("dual" + "results.csv","w")
-for out in output:
-    
-    if out.startswith("dual"):
-        file.write(str(out))
-file.close() 
+        if out.startswith("kernal"):
+            file.write(str(out))
+    file.close() 
