@@ -27,7 +27,14 @@ for i in range(len(x)):
         xs.append(np.inner(x[i],x[j]))
 val = 0
 #asum = [4.0, 4.0, 6.0, 4.0, 4.0, 6.0, 6.0, 6.0, 9.0]
-val = np.sum(x*y*a)
+#xs = [8, 14, 6, 14, 25, 10, 6, 10, 5]
+oth = (((a*np.ones((3,3))).T)*a) * ((y*np.ones((3,3))).T)*y
+o = (((a*y*np.ones((3,3))).T)*a*y)
+val1 = np.matmul(x,x.T) # xs = val
+val = np.dot(o.flatten(),val1.flatten())
+eyey = np.eye(len(y))*y
+eyea = np.eye(len(a))*a
+np.ones((2,3))
 print(sum)
 print(val)
 print()

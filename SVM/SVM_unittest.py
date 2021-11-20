@@ -102,7 +102,7 @@ class SGDTests(TestCase):
             if example[-1:][0] * pred >= 0:
                 count +=1
             else:
-                message = "pred:" + str(pred) + " label: " + str(example[-1:][0]) + " bias: " + str(Svm.w[-1:])
+                message = "pred:" + str(pred) + " label: " + str(example[-1:][0]) + " weight: " + str(Svm.w)
                 self.fail(message)
             total +=1
     #print("correct spliting: ",str(count),"/",str(total))

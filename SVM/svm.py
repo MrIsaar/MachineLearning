@@ -53,8 +53,10 @@ class svm(object):
         yi = example[-1:]
         xy = np.multiply(xi,yi)
         rc = self.learningRate(t)*self.C
-        update = self.learningRate(t)*(xy + np.multiply(-2*(1/t),self.w))
-
+        w0 = self.w[:-1]
+        w0 = np.concatenate((w0,[0]))
+        #update = self.learningRate(t)*(xy + np.multiply(-2*(1/t),self.w))
+        update = -self.learningRate(t)*w0 + self.learningRate(t)*self.C*len(self.examples)*np.multiply(xi,yi)
         self.w = self.w + update
         
         
@@ -71,7 +73,10 @@ class svm(object):
                     self.updateWeight(self.examples[i],t)
                     wrongguess = True
                 else: 
-                    self.w = np.multiply(self.w,(1-self.learningRate(t)))
+                    w0 = self.w[:-1]
+                    
+                    w0 = np.multiply(w0,(1-self.learningRate(t)))
+                    self.w = np.concatenate((w0,self.w[-1:]))
             if ( not wrongguess) :
                 break
             
@@ -90,15 +95,31 @@ class svm(object):
 
     def wstar(self):
         """calculate wstar from alpha star and examples
+            w* = sum(i) {aiyixi}
         """
         wstar = np.zeros(len(self.x[0][:-1]))
         for i in range(len(self.x)):
             calc = np.multiply(self.x[i][:-1],self.y[i]*self.alpha[i])
             wstar += calc
+            
+        """"
+            calculate bias
+            b* = (1/#notzero alpha) sum(notzero alpha) (yi - wTxi)
+        """
+        bias = 0
+        count = 0
+        for i in range(len(self.x)):
+            if(self.alpha[i] > 0.0001):
+                bias += (self.y[i] - np.dot(wstar,self.x[i][:-1]))
+                count += 1
+        bias = (1/count)*bias
+        
+        wstar = np.concatenate((wstar,[bias]))
+        """    
         j = math.floor(r.uniform(0,len(self.x)))
         wstar = np.concatenate((wstar,[0]))
         bias = self.y[j] - np.dot(self.x[j],wstar)
-        wstar[len(wstar)-1] = bias
+        wstar[len(wstar)-1] = bias"""
         return wstar
     
     def objective(self,alpha,x,y):
@@ -115,12 +136,22 @@ class svm(object):
         sum = 0
         
         """substitute for matrix and vector operations"""
+        """
         for i in range(len(x)):
             for j in range(len(x)):
                 sum += y[i]*y[j]*alpha[i]*alpha[j]*np.inner(x[i],x[j])
+        """
+        o = (((alpha*y*np.ones((len(y),len(y)))).T)*alpha*y)
+        val = np.matmul(x,x.T) # xs = val
+        sum = np.dot(o.flatten(),val.flatten())
         sum /= 2
+        val = alpha.sum()
+        """
         for i in range(len(x)):
-            sum -= alpha[i]
+            val += alpha[i]
+        """
+        
+        sum -= val
         return sum
     
     def dualSVM(self):
