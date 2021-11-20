@@ -169,7 +169,7 @@ class svm(object):
         return sum
     
     def dualSVM(self):
-        setting = "mehtod=SLSOP"
+        setting = "mehtod=SLSQP"
         MyBounds = [(0,self.C) for a in self.alpha] # 0 <= alpha <= C
         self.constraint = lambda alpha : np.dot(alpha,self.y)
         MyConstraints = ({'type':'eq','fun':self.constraint})# sum(i){ aiyi } = 0 

@@ -54,9 +54,12 @@ def testAlgorithm(method,epochs,c,learninga):
     error = 0
     count = 0
     samples = sys.argv[1]
+    learningrate = 0.1
+    if method == "kernal":
+        learningrate = learninga
     #samples = "bank-note\\train.csv"
     
-    percep = svm(samples,10,0.1,learninga,c,method)
+    percep = svm(samples,10,learningrate,learninga,c,method)
     samples = processCSV(samples)
     for j in range(len(samples)):
         pred = percep.prediction(samples[j])
@@ -109,9 +112,14 @@ def test(hyper,out,learninga,algorithm,testsize=20):
         #progressBar(i + testsize*c.index(hyper),testsize*len(c),40)
         trainErr += trer
         testErr += tser
-        if i % math.floor(testsize/4.0) == 0:
+        if i % math.ceil(testsize/4.0) == 0:
             print(algorithm," progress: ", i,"/",testsize, " hyper: " , math.ceil(hyper*873),"/873")
     output += "10," + str(trainErr/count)+","+str(testErr/count) + "," + str(svm.w) + "\n"
+    if algorithm == "kernal":
+        for i in range(len(svm.alpha)):
+            if svm.alpha[i] > 0.00001:
+                output += str(svm.x[i])
+        output += "\n"
     updateOut(output,out)
 
 
@@ -119,10 +127,10 @@ testSGD = True
 testDual = True
 testKernal = True
 
-if len(sys.argv) == 4 and sys.argv[3] != 0:
-    testSGD = sys.argv[3] == 1
-    testDual = sys.argv[3] == 2
-    testKernal = sys.argv[3] == 3
+if len(sys.argv) == 4 and sys.argv[3] != "all":
+    testSGD = sys.argv[3] == "sgd"
+    testDual = sys.argv[3] == "dual"
+    testKernal = sys.argv[3] == "kernal"
 
 threadLock = threading.Lock()
 threads = []
@@ -184,14 +192,16 @@ if(testDual):
     
 if(testKernal):
     output = []
+    learnList = [0.1,0.5,1,5,100]
     print ("starting kernal: warning takes a long time")
     """ KERNAL  """
     for hyper in c:
-        """multithread testing for faster results"""
-        thread = threading.Thread(target=test,args=(hyper,output,learninga,"kernal",1))
-        thread.start()
+        for learn in learnList:
+            """multithread testing for faster results"""
+            thread = threading.Thread(target=test,args=(hyper,output,learn,"kernal",1))
+            thread.start()
     
-        threads.append(thread)
+            threads.append(thread)
   
     #progressBar(40,40,40)
     for thread in threads:

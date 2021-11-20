@@ -46,7 +46,7 @@
             "request": "launch",
             "program": "C:\\Users\\Isaac Gibson\\source\\VS code\\a01\\MachineLearning\\SVM\\testSVM.py",
             "console": "integratedTerminal",
-            "args": ["C:\\Users\\Isaac Gibson\\source\\VS code\\a01\\MachineLearning\\bank-note\\train.csv","C:\\Users\\Isaac Gibson\\source\\VS code\\a01\\MachineLearning\\bank-note\\test.csv"]
+            "args": ["C:\\Users\\Isaac Gibson\\source\\VS code\\a01\\MachineLearning\\bank-note-short\\train.csv","C:\\Users\\Isaac Gibson\\source\\VS code\\a01\\MachineLearning\\bank-note-short\\test.csv", "kernal"]
         }
     ]
 }

@@ -1,1 +1,1 @@
-python3.7 ./testSVM.py ../bank-note/train.csv ../bank-note/train.csv
+python3.7 ./testSVM.py ../bank-note-short/train.csv ../bank-note-short/train.csv all
