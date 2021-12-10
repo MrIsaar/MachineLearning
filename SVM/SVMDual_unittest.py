@@ -107,7 +107,7 @@ class Dualtest(TestCase):
         examples = [[-1,0,1],[3,0,1],[4,0,1],[5,0,1],[7,0,1],[1,0,-1],[-3,0,-1]]
         
         c = [(100/873),(500/873),(700/873)]
-        Svm = svm(examples,10,0.1,2,c[0],test)
+        Svm = svm(examples,10,0.1,2,c[0],test) 
 
         count = 0
         total = 0

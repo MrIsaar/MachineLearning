@@ -108,7 +108,7 @@ def test(hyper,out,learninga,algorithm,testsize=20):
     
     for i in range(testsize):
         count+=1
-        trer,tser,svm = testAlgorithm(algorithm,10,hyper,learninga)
+        trer,tser,svm = testAlgorithm(algorithm,100,hyper,learninga)
         #progressBar(i + testsize*c.index(hyper),testsize*len(c),40)
         trainErr += trer
         testErr += tser
@@ -120,7 +120,9 @@ def test(hyper,out,learninga,algorithm,testsize=20):
             if svm.alpha[i] > 0.00001:
                 output += str(svm.x[i])
         output += "\n"
+        print (output)
     updateOut(output,out)
+    
 
 
 testSGD = True
@@ -185,7 +187,7 @@ if(testDual):
     file = open("dual" + "results.csv","w")
     for out in output:
     
-        if out.startswith("dual"):
+        
             file.write(str(out))
     file.close() 
  
@@ -211,6 +213,6 @@ if(testKernal):
     file = open("kernal" + "results.csv","w")
     for out in output:
     
-        if out.startswith("kernal"):
+        
             file.write(str(out))
     file.close() 
