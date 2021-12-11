@@ -36,14 +36,14 @@ def weightToStr(nNet,method):
     return output
 
     
-def testAlgorithm(width,epochs):
+def testAlgorithm(width,epochs,initW):
     
     total = 0
     error = 0
     count = 0
     samples = sys.argv[1]
     #samples = "bank-note\\train.csv"
-    nNet = NNet(samples,10,0.1,2,width)
+    nNet = NNet(samples,10,0.1,2,width,initW)
     samples = processCSV(samples)
     split = splitExamples(samples)
     for i in range(len(samples)):
@@ -135,13 +135,21 @@ if len(sys.argv) == 2:
     print ("you did not provide testing file")
     quit()
 
+
 for width in [5,10,25,50,100]:
-    output = "w" + str(width) + "\nepochs,train,test\n"
+    "w == rand"
+    output = "w" + str(width) + " random\nepochs,train,test\n"
+    output += testAlgorithm(width,10,True) + "\n"
     
-        
-    output += testAlgorithm(width,10) + "\n"
+    file = open("w" + str(width) + "randomWeight.csv","w")
+    file.write(output)
+    file.close() 
     
-    file = open("w" + str(width) + "weight.csv","w")
+    "w == 0"
+    output = "w" + str(width) + " weight=0\nepochs,train,test\n"
+    output += testAlgorithm(width,10,False) + "\n"
+    
+    file = open("w" + str(width) + "zeroWeight.csv","w")
     file.write(output)
     file.close() 
 

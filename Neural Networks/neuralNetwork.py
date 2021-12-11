@@ -63,6 +63,7 @@ class NNet(object):
             self.examples = processCSV(examples)
         self.x, self.y = splitExamples(self.examples)
         
+        self.initW = randomWeight
         
         if(width is None):
             self.width = len(self.x[0])

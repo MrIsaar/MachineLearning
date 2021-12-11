@@ -4,3 +4,4 @@ __pycache__\preview
 .vscode
 SVM\__pycache__
 manualNN.py
+*.csv
