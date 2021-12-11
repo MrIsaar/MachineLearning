@@ -37,7 +37,10 @@ def weightToStr(nNet,method):
 
     
 def testAlgorithm(width,epochs,initW):
-    
+    initwmethod = "random"
+    if not initW:
+        initwmethod = "zero"
+        
     total = 0
     error = 0
     count = 0
@@ -58,8 +61,12 @@ def testAlgorithm(width,epochs,initW):
         else:
             error += 1
         total +=1
-    print("width ",width," training ",epochs," error/total: ",error,"/",total)
-    output = str(epochs) +","+ str((error+0.000001)/total)[:5]
+    print("width ",width," training ",initwmethod," error/total: ",error,"/",total)
+    
+    output = str(initwmethod) +","+ str((error+0.000001)/total)[:5]
+    
+    if(error == 0):
+        output = str(initwmethod) +","+ str(0)
     
 
     total = 0
