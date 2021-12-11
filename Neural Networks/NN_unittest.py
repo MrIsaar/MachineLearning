@@ -2,16 +2,25 @@ from unittest import TestCase
 from neuralNetwork import NNet
 from neuralNetwork import splitExamples
 
+def mapPrediction(nNet,xsize,ysize,spacing):
+    out = ""
+    for x in range(-xsize*(1/spacing),xsize*(1/spacing)):
+        for y in range(-ysize*(1/spacing),ysize*(1/spacing)):
+            sample = [1,x*spacing,y*spacing]
+            pred = nNet.prediction(sample)
+            if(pred > 1):
+                out += "(" + str(sample[1]) +","+ str(sample[2]) + "), "
+
 class Dualtest(TestCase):
-    
+   
     def test_basic(self):
         """Tests 4 points in a square, no test of margin breaking points
         """
         examples = [[2.0,2.0,1.0],[2.0,-2.0,1.0],[-2.0,2.0,-1.0],[-2.0,-2.0,-1.0]]
     
         c = [(100/873),(500/873),(700/873)]
-        nNet = NNet(examples,100,0.1,2)
-
+        nNet = NNet(examples,20,5,10,verbose=True)
+        
         count = 0
         total = 0
         split = splitExamples(examples)
@@ -22,9 +31,10 @@ class Dualtest(TestCase):
             if y * pred >= 0.0:
                 count +=1
             else:
-                
-                self.fail()
+                message = "y: " + str(y) + "pred: " + str(pred) + "\nconverge: " + str(nNet.convergeance)
+                self.fail(message)
             total +=1
+            
     #print("correct spliting: ",str(count),"/",str(total))
         self.assertTrue(count == total)
         

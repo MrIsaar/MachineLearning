@@ -47,6 +47,14 @@
             "program": "C:\\Users\\Isaac Gibson\\source\\VS code\\a01\\MachineLearning\\SVM\\testSVM.py",
             "console": "integratedTerminal",
             "args": ["C:\\Users\\Isaac Gibson\\source\\VS code\\a01\\MachineLearning\\bank-note-short\\train.csv","C:\\Users\\Isaac Gibson\\source\\VS code\\a01\\MachineLearning\\bank-note-short\\test.csv", "kernal"]
+        },
+        {
+            "name": "Python: TestNN",
+            "type": "python",
+            "request": "launch",
+            "program": "C:\\Users\\Isaac Gibson\\source\\VS code\\a01\\MachineLearning\\Neural Networks\\testNN.py",
+            "console": "integratedTerminal",
+            "args": ["C:\\Users\\Isaac Gibson\\source\\VS code\\a01\\MachineLearning\\bank-note\\train.csv","C:\\Users\\Isaac Gibson\\source\\VS code\\a01\\MachineLearning\\bank-note\\test.csv"]
         }
     ]
 }

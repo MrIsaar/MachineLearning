@@ -23,6 +23,10 @@ def splitExamples(examples):
     return (x,y)
 
 def sigmoid(x):
+    if(x > 40):
+        return 1
+    if(x < -40):
+        return 0
     return 1/(1+math.exp(-x))
 
 def correctWeights(w):
@@ -45,7 +49,7 @@ class NNet(object):
             width (int): size hidden layers span (not including bias nodes). Defaults to size of example
             weight (str, optional): initalizes weight to random gaussian value or zero if false . Defaults to True.
         """
-        
+        self.verbose = verbose
         
         self.r = learningrate
         self.a = learningd
@@ -53,6 +57,8 @@ class NNet(object):
         self.learningRate = lambda t : self.r/(1+(self.r/self.a)*t)
         
         self.examples = examples
+        self.convergeance = []
+        self.count = 0
         if(type(examples) is str):
             self.examples = processCSV(examples)
         self.x, self.y = splitExamples(self.examples)
@@ -62,38 +68,63 @@ class NNet(object):
             self.width = len(self.x[0])
             width = self.width
         else:
-            self.width = width + 1
-        self.z = np.zeros((4,width))
-        i = np.concatenate((np.ones((4,1)),np.zeros((4,width-1))),1) # init bias variables
-        self.z = self.z+i
+            self.width = width
+            if(self.width < len(self.x[0])):
+                raise Exception("width too small for input")
+            
+
         
-        
+        self.z = None
         if randomWeight:
             np.random.seed(12345)
             self.w = np.random.rand(4,width,width)
+            self.w[0] *= 0
+            clearing = np.ones(width)
+            clearing[0] = 0
+            self.w[1] *= clearing      # removes all non existant edges
+            self.w[2] *= clearing
+            clearing = np.zeros(width)
+            clearing[1] = 1
+            self.w[3] *= clearing
         else:
             self.w = np.zeros((4,width,width))
+            
+        if(verbose):
+            self.beforew =self.w
             
         self.dldz = np.zeros((4,width))
         self.dldw = np.zeros((4,width,width))
         
         self.sgdNeuralNet()
         
+        if(verbose):
+           self.afterw = self.w
+           self.diffw = self.afterw - self.beforew
+        
+    def resetZ(self,x):
+        self.z = np.zeros((4,self.width))
+        i = np.concatenate((np.ones((4,1)),np.zeros((4,self.width-1))),1) # init bias variables
+        self.z = self.z+i
+        
+            
+        self.z[0] = np.append(x,np.zeros(self.width - len(x)))
+        
     
     def prediction(self,x):
-        self.z[0] = x
+        self.resetZ(x)
        
         for layer in range(1,4):
             for toNode in range (1,len(self.w[layer][0])):
                 
-                for fromNode in range (0,3):
-
+                for fromNode in range (0,len(self.w[layer])):
+                    z = self.z[layer-1][fromNode]*self.w[layer][fromNode][toNode]
                     self.z[layer][toNode] += self.z[layer-1][fromNode]*self.w[layer][fromNode][toNode]
                 if layer != 3:
                     self.z[layer][toNode] = sigmoid(self.z[layer][toNode])
         wt = self.w[3].T
-        
-        return np.dot(wt[1],self.z[2])
+        y = np.dot(wt[1],self.z[2])
+        #y = y/abs(y)
+        return y
         
     
         
@@ -102,7 +133,7 @@ class NNet(object):
         Implimentation of the Backpropigation algorithm
         
         """
-        self.z[0] = x
+        
         y = self.prediction(x) # initializes all z nodes and gets y
         "dldy =  y - y*" 
         dldy = y-label
@@ -126,6 +157,7 @@ class NNet(object):
             "find dldw"
             for fromNode in range(len(self.z[layer-1])):
                 for toNode in range(1,len(self.w[layer][fromNode])):
+                    "dldw[h][m][n] = dldz[h][n] * z[h-1]"
                     self.dldw[layer][fromNode][toNode] = (self.dldz[layer][toNode])*(self.z[layer-1][fromNode])*self.z[layer][toNode]*(1-self.z[layer][toNode] )
                     
             "find dldz"
@@ -145,33 +177,44 @@ class NNet(object):
         self.z = np.array([[1.0,1.0,1.0],[1.0,0.0,0.0],[1.0,0.0,0.0],[0.0,0.0,0.0]]) # inputs, layer1,layer2,output
         
        
-        self.backPropFirst(1)
+        self.backPropFirst([1,1,1],1)
         print(self.dldw) #break point to check all values dl
+        
         
     def sgdNeuralNet(self):
         for t in range(1,self.T):
             xyOrder = [i for i in range(len(self.x))]
-            r.shuffle(xyOrder)
+            #r.shuffle(xyOrder)
             for i in xyOrder:
                 x = self.x[i]
                 y = self.y[i]
-                self.computeGradient(x,y) #computes loss
+                
+                if(self.verbose):
+                    #measure loss over each update
+                    self.convergeance.append((self.count*0.1 ,10 * (0.5 * (self.prediction(x) -1 )**2)))
+                    self.count+=1
+                
+                self.backPropFirst(x,y) #computes loss gradient
                 self.updateWeights(t)
                 
     def updateWeights(self,t):
         temp = self.w - self.learningRate(t)*self.dldw
         self.w = temp
+        if(self.verbose):
+            self.afterw = self.w
+            self.diffw = self.afterw - self.beforew
         
     def computeGradient(self,x,label):
         y = self.prediction(x)
         h = 1
         for m in range(len(self.x)):
-            for n in range(self.width):
+            for n in range(1,self.width):
                 self.dldw[h][m][n] = self.backProp(h,m,n,y,label)
                 
     def backProp(self,h,m,n,y,label):
+        """returns derivitive of L with respect to w[h][m][n] """
         self.dldw[h][m][n] = 0
-        if h+1 == 4:
+        if h == 3:
             "dldy =  y - y*" 
             dldy = y-label
             self.dldz[3][1] = dldy
@@ -179,13 +222,44 @@ class NNet(object):
         
         paths = np.array([])
         for toNode in range(1,len(self.w[h+1])):
-            path = [(h+1,n,toNode)]
-            for layer in range(h,len(self.w)-1):
-                if h+1 == 4:
-                    paths.append(path)
+            paths.append(self.findPath(h,toNode,[]))
+            
+        for s in paths:
+            for layer,to in s:
+                if layer == 3:
+                    dldy = y-label
+                else:
+                    pass
+        
+        
+    def findPath(self,layer,toNode,path):
+        """recursively finds path to y"""
+        path.append( (layer+1,toNode))
+        if layer+1 == 3:
+           return path    
+        else:
+            return self.findPath(layer+1,toNode,1,path)
                 
    
                 
 if __name__ == "__main__":
-    nn = NNet([[1,1]],3)
+    nn = NNet([[1,1,1]],3,0.1,2)
     nn.testBackProp() # tests backpropigation
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
