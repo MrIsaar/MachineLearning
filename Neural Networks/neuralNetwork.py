@@ -132,7 +132,7 @@ class NNet(object):
         
     
         
-    def backPropFirst(self,x,label):
+    def backProp(self,x,label):
         """
         Implimentation of the Backpropigation algorithm
         
@@ -181,7 +181,7 @@ class NNet(object):
         self.z = np.array([[1.0,1.0,1.0],[1.0,0.0,0.0],[1.0,0.0,0.0],[0.0,0.0,0.0]]) # inputs, layer1,layer2,output
         
        
-        self.backPropFirst([1,1,1],1)
+        self.backProp([1,1,1],1)
         print(self.dldw) #break point to check all values dl
         
         
@@ -198,7 +198,7 @@ class NNet(object):
                     self.convergeance.append((self.count*0.1 ,10 * (0.5 * (self.prediction(x) -1 )**2)))
                     self.count+=1
                 
-                self.backPropFirst(x,y) #computes loss gradient
+                self.backProp(x,y) #computes loss gradient
                 self.updateWeights(t)
                 
     def updateWeights(self,t):
@@ -215,34 +215,6 @@ class NNet(object):
             for n in range(1,self.width):
                 self.dldw[h][m][n] = self.backProp(h,m,n,y,label)
                 
-    def backProp(self,h,m,n,y,label):
-        """returns derivitive of L with respect to w[h][m][n] """
-        self.dldw[h][m][n] = 0
-        if h == 3:
-            "dldy =  y - y*" 
-            dldy = y-label
-            self.dldz[3][1] = dldy
-            return dldy*self.z[h-1][m]
-        
-        paths = np.array([])
-        for toNode in range(1,len(self.w[h+1])):
-            paths.append(self.findPath(h,toNode,[]))
-            
-        for s in paths:
-            for layer,to in s:
-                if layer == 3:
-                    dldy = y-label
-                else:
-                    pass
-        
-        
-    def findPath(self,layer,toNode,path):
-        """recursively finds path to y"""
-        path.append( (layer+1,toNode))
-        if layer+1 == 3:
-           return path    
-        else:
-            return self.findPath(layer+1,toNode,1,path)
                 
    
                 
