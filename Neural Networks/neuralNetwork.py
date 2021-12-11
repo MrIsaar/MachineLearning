@@ -29,16 +29,16 @@ def sigmoid(x):
         return 0
     return 1/(1+math.exp(-x))
 
-def correctWeights(w):
-    top = np.zeros((3,4))
-    mid = np.concatenate((np.zeros((1,3)),np.ones((3,3)))).T
-    bottom = np.concatenate(((np.zeros((1,3)),np.ones((1,3)),np.ones((1,3)),(np.zeros((1,3)))))).T
-    full = np.array([top,mid,bottom])
-    return np.transpose(w.T*full)
+# def correctWeights(w):
+#     top = np.zeros((3,4))
+#     mid = np.concatenate((np.zeros((1,3)),np.ones((3,3)))).T
+#     bottom = np.concatenate(((np.zeros((1,3)),np.ones((1,3)),np.ones((1,3)),(np.zeros((1,3)))))).T
+#     full = np.array([top,mid,bottom])
+#     return np.transpose(w.T*full)
 
 
 class NNet(object):
-    def __init__(self,examples,epochs,learningrate,learningd,width=None,randomWeight=True,verbose=False):
+    def __init__(self,examples,epochs,learningrate,learningd,width=None,layers=3,randomWeight=True,verbose=False):
         """Neural Network that uses 1 input 2 hidden and 1 output layer
             weights are stored as 3d array
             w[layer][from][to]
@@ -73,28 +73,31 @@ class NNet(object):
             if(self.width < len(self.x[0])):
                 raise Exception("width too small for input")
             
+        self.layers = layers
+            
 
         
         self.z = None
         if randomWeight:
             np.random.seed(12345)
-            self.w = np.random.rand(4,width,width)
+            self.w = np.random.rand(self.layers+1,width,width)
             self.w[0] *= 0
             clearing = np.ones(width)
             clearing[0] = 0
-            self.w[1] *= clearing      # removes all non existant edges
-            self.w[2] *= clearing
+            for layer in range(1,self.layers):
+                self.w[layer] *= clearing      # removes all non existant edges
+            #self.w[2] *= clearing
             clearing = np.zeros(width)
             clearing[1] = 1
-            self.w[3] *= clearing
+            self.w[self.layers] *= clearing
         else:
-            self.w = np.zeros((4,width,width))
+            self.w = np.zeros((self.layers+1,width,width))
             
         if(verbose):
             self.beforew =self.w
             
-        self.dldz = np.zeros((4,width))
-        self.dldw = np.zeros((4,width,width))
+        self.dldz = np.zeros((self.layers+1,width))
+        self.dldw = np.zeros((self.layers+1,width,width))
         
         self.sgdNeuralNet()
         
@@ -103,8 +106,8 @@ class NNet(object):
            self.diffw = self.afterw - self.beforew
         
     def resetZ(self,x):
-        self.z = np.zeros((4,self.width))
-        i = np.concatenate((np.ones((4,1)),np.zeros((4,self.width-1))),1) # init bias variables
+        self.z = np.zeros((self.layers+1,self.width))
+        i = np.concatenate((np.ones((self.layers+1,1)),np.zeros((self.layers+1,self.width-1))),1) # init bias variables
         self.z = self.z+i
         
             
@@ -114,7 +117,7 @@ class NNet(object):
     def prediction(self,x):
         self.resetZ(x)
        
-        for layer in range(1,4):
+        for layer in range(1,self.layers+1):
             for toNode in range (1,len(self.w[layer][0])):
                 
                 for fromNode in range (0,len(self.w[layer])):
@@ -138,7 +141,7 @@ class NNet(object):
         y = self.prediction(x) # initializes all z nodes and gets y
         "dldy =  y - y*" 
         dldy = y-label
-        self.dldz[3][1] = dldy 
+        self.dldz[self.layers][1] = dldy 
         
         
         "handle layer below output"

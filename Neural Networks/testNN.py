@@ -43,7 +43,7 @@ def testAlgorithm(width,epochs,initW):
     count = 0
     samples = sys.argv[1]
     #samples = "bank-note\\train.csv"
-    nNet = NNet(samples,10,0.1,2,width,initW)
+    nNet = NNet(samples,10,0.1,2,width,randomWeight=initW)
     samples = processCSV(samples)
     split = splitExamples(samples)
     for i in range(len(samples)):
